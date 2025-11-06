@@ -19,6 +19,14 @@ namespace CardGames.Solitaire
         [SerializeField] private Button restartButton;
         [SerializeField] private Button undoButton;
 
+        [Header("Win Popup")]
+        [SerializeField] private GameObject winPanel;
+        [SerializeField] private TextMeshProUGUI winMessageText;
+        [SerializeField] private TextMeshProUGUI winScoreText;
+        [SerializeField] private TextMeshProUGUI winTimeText;
+        [SerializeField] private Button winNewGameButton;
+        [SerializeField] private Button winCloseButton;
+
         [Header("Game Manager Reference")]
         [SerializeField] private SolitaireGameManager gameManager;
 
@@ -48,6 +56,20 @@ namespace CardGames.Solitaire
             {
                 undoButton.onClick.AddListener(OnUndoClicked);
             }
+
+            // Setup win panel button listeners
+            if (winNewGameButton != null)
+            {
+                winNewGameButton.onClick.AddListener(OnWinNewGameClicked);
+            }
+
+            if (winCloseButton != null)
+            {
+                winCloseButton.onClick.AddListener(OnWinCloseClicked);
+            }
+
+            // Hide win panel initially
+            HideWinPanel();
 
             // Subscribe to game manager events
             if (gameManager != null)
@@ -153,7 +175,7 @@ namespace CardGames.Solitaire
             if (won)
             {
                 Debug.Log($"🎉 YOU WON! Score: {finalScore}, Time: {finalTime}s");
-                // You could show a win popup here
+                ShowWinPanel(finalScore, finalTime);
             }
         }
 
@@ -163,6 +185,7 @@ namespace CardGames.Solitaire
         private void OnNewGameClicked()
         {
             Debug.Log("[UI] New Game clicked");
+            HideWinPanel();
 
             if (gameManager != null)
             {
@@ -177,6 +200,7 @@ namespace CardGames.Solitaire
         private void OnRestartClicked()
         {
             Debug.Log("[UI] Restart clicked");
+            HideWinPanel();
 
             if (gameManager != null)
             {
@@ -212,6 +236,70 @@ namespace CardGames.Solitaire
             {
                 undoButton.interactable = enabled;
             }
+        }
+
+        /// <summary>
+        /// Show the win panel with final score and time
+        /// </summary>
+        private void ShowWinPanel(int finalScore, int finalTime)
+        {
+            if (winPanel != null)
+            {
+                winPanel.SetActive(true);
+
+                // Update win panel text
+                if (winMessageText != null)
+                {
+                    winMessageText.text = "🎉 YOU WON! 🎉";
+                }
+
+                if (winScoreText != null)
+                {
+                    winScoreText.text = $"Final Score: {finalScore}";
+                }
+
+                if (winTimeText != null)
+                {
+                    int minutes = finalTime / 60;
+                    int seconds = finalTime % 60;
+                    winTimeText.text = $"Time: {minutes:00}:{seconds:00}";
+                }
+            }
+        }
+
+        /// <summary>
+        /// Hide the win panel
+        /// </summary>
+        private void HideWinPanel()
+        {
+            if (winPanel != null)
+            {
+                winPanel.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Win panel New Game button clicked
+        /// </summary>
+        private void OnWinNewGameClicked()
+        {
+            Debug.Log("[UI] Win panel New Game clicked");
+            HideWinPanel();
+
+            if (gameManager != null)
+            {
+                gameManager.InitializeGame();
+                StartGame();
+            }
+        }
+
+        /// <summary>
+        /// Win panel Close button clicked
+        /// </summary>
+        private void OnWinCloseClicked()
+        {
+            Debug.Log("[UI] Win panel Close clicked");
+            HideWinPanel();
         }
     }
 }

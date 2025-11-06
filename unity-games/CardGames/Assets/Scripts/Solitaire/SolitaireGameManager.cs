@@ -30,6 +30,9 @@ namespace CardGames.Solitaire
         private float gameStartTime;
         private bool gameWon = false;
 
+        // Restart functionality - save initial deck order
+        private List<Card> initialDeckOrder = new List<Card>();
+
         // Undo functionality
         private Stack<MoveRecord> moveHistory = new Stack<MoveRecord>();
         private const int maxUndoSteps = 10; // Limit undo history
@@ -81,6 +84,11 @@ namespace CardGames.Solitaire
             ClearGame();
             CreateDeck();
             ShuffleDeck();
+
+            // Save the initial deck order for restart functionality
+            initialDeckOrder.Clear();
+            initialDeckOrder.AddRange(deck);
+
             DealCards();
 
             UpdateUI();
@@ -436,12 +444,47 @@ namespace CardGames.Solitaire
         }
 
         /// <summary>
-        /// Restart the current game
+        /// Restart the current game with the same initial deck order
         /// </summary>
         public void RestartGame()
         {
-            Debug.Log("[GameManager] Restarting game");
-            InitializeGame();
+            Debug.Log("[GameManager] Restarting game with same deck order");
+
+            // Check if we have an initial deck to restart from
+            if (initialDeckOrder == null || initialDeckOrder.Count == 0)
+            {
+                Debug.LogWarning("[GameManager] No initial deck saved, starting new game instead");
+                InitializeGame();
+                return;
+            }
+
+            // Reset game state
+            score = 0;
+            moves = 0;
+            gameWon = false;
+            gameStartTime = Time.time;
+            moveHistory.Clear();
+
+            // Clear all piles (but don't destroy cards)
+            if (stockPile != null) stockPile.Clear();
+            if (wastePile != null) wastePile.Clear();
+            foreach (var pile in tableauPiles)
+            {
+                if (pile != null) pile.Clear();
+            }
+            foreach (var pile in foundationPiles)
+            {
+                if (pile != null) pile.Clear();
+            }
+
+            // Restore deck to initial order
+            deck.Clear();
+            deck.AddRange(initialDeckOrder);
+
+            // Re-deal cards from saved order
+            DealCards();
+
+            UpdateUI();
         }
 
         /// <summary>
