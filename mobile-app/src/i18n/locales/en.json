@@ -57,5 +57,40 @@
     "zh": "中文",
     "ja": "日本語",
     "ar": "العربية"
+  },
+  "howToPlay": {
+    "solitaire": {
+      "title": "How to Play Solitaire",
+      "objective": {
+        "title": "Goal",
+        "text": "Move all cards to the 4 foundation piles (top right), sorted by suit from Ace to King."
+      },
+      "howTo": {
+        "title": "How to Play",
+        "steps": [
+          "Tap stock pile (top left) to draw cards",
+          "Drag cards to build descending sequences with alternating colors",
+          "Kings go on empty tableau spaces",
+          "Move Aces to foundations first, then build up by suit"
+        ]
+      },
+      "scoring": {
+        "title": "Scoring",
+        "points": [
+          "+10 points for each card to foundation",
+          "+5 points for revealing face-down cards",
+          "+100 bonus for winning"
+        ]
+      },
+      "tips": {
+        "title": "Quick Tips",
+        "list": [
+          "Always move Aces and 2s to foundations",
+          "Free up face-down cards first",
+          "Don't rush - plan your moves",
+          "Use Undo button if stuck"
+        ]
+      }
+    }
   }
 }

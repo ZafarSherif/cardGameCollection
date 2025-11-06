@@ -60,6 +60,27 @@ export interface Translations {
     ja: string;
     ar: string;
   };
+  howToPlay: {
+    solitaire: {
+      title: string;
+      objective: {
+        title: string;
+        text: string;
+      };
+      howTo: {
+        title: string;
+        steps: string[];
+      };
+      scoring: {
+        title: string;
+        points: string[];
+      };
+      tips: {
+        title: string;
+        list: string[];
+      };
+    };
+  };
 }
 
 export interface LanguageContextType {

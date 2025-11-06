@@ -57,5 +57,40 @@
     "zh": "中文",
     "ja": "日本語",
     "ar": "العربية"
+  },
+  "howToPlay": {
+    "solitaire": {
+      "title": "Como Jogar Paciência",
+      "objective": {
+        "title": "Objetivo",
+        "text": "Mova todas as cartas para as 4 pilhas de fundação (canto superior direito), ordenadas por naipe de Ás a Rei."
+      },
+      "howTo": {
+        "title": "Como Jogar",
+        "steps": [
+          "Toque na pilha de reserva (canto superior esquerdo) para sacar cartas",
+          "Arraste cartas para construir sequências descendentes com cores alternadas",
+          "Reis vão em espaços vazios do tableau",
+          "Mova Ases para as fundações primeiro, depois construa por naipe"
+        ]
+      },
+      "scoring": {
+        "title": "Pontuação",
+        "points": [
+          "+10 pontos para cada carta na fundação",
+          "+5 pontos por revelar cartas viradas",
+          "+100 bônus por ganhar"
+        ]
+      },
+      "tips": {
+        "title": "Dicas Rápidas",
+        "list": [
+          "Sempre mova Ases e 2s para as fundações",
+          "Libere cartas viradas primeiro",
+          "Não se apresse - planeje suas jogadas",
+          "Use o botão Desfazer se ficar preso"
+        ]
+      }
+    }
   }
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GameCard } from '../components/GameCard';
+import { HowToPlayModal } from '../components/HowToPlayModal';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { usePlayerStore } from '../store/playerStore';
 import { GAME_METADATA } from '../constants/games';
@@ -28,10 +29,19 @@ interface HomeScreenProps {
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const player = usePlayerStore((state) => state.player);
   const { t } = useLanguage();
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [selectedGame, setSelectedGame] = useState<'solitaire' | null>(null);
 
   const handleGamePress = (gameType: GameType) => {
     if (gameType === GameType.SOLITAIRE) {
       navigation.navigate('Game', { gameType });
+    }
+  };
+
+  const handleHowToPlay = (gameType: GameType) => {
+    if (gameType === GameType.SOLITAIRE) {
+      setSelectedGame('solitaire');
+      setShowHowToPlay(true);
     }
   };
 
@@ -107,6 +117,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             key={game.id}
             game={game}
             onPress={() => handleGamePress(game.id)}
+            onHowToPlay={
+              game.id === GameType.SOLITAIRE
+                ? () => handleHowToPlay(game.id)
+                : undefined
+            }
           />
         ))}
 
@@ -114,6 +129,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <Text style={styles.footerText}>{t.home.moreGamesComing}</Text>
         </View>
       </ScrollView>
+
+      {/* How to Play Modal */}
+      {selectedGame && (
+        <HowToPlayModal
+          visible={showHowToPlay}
+          onClose={() => setShowHowToPlay(false)}
+          gameType={selectedGame}
+        />
+      )}
     </SafeAreaView>
   );
 };

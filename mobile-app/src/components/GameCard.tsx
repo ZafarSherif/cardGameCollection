@@ -7,9 +7,10 @@ import { useLanguage } from '../i18n/LanguageContext';
 interface GameCardProps {
   game: Game;
   onPress: () => void;
+  onHowToPlay?: () => void;
 }
 
-export const GameCard: React.FC<GameCardProps> = ({ game, onPress }) => {
+export const GameCard: React.FC<GameCardProps> = ({ game, onPress, onHowToPlay }) => {
   const { t } = useLanguage();
 
   return (
@@ -33,6 +34,20 @@ export const GameCard: React.FC<GameCardProps> = ({ game, onPress }) => {
           </View>
         )}
       </View>
+
+      {/* How to Play button - only show if handler provided */}
+      {onHowToPlay && game.available && (
+        <TouchableOpacity
+          style={styles.infoButton}
+          onPress={(e) => {
+            e.stopPropagation();
+            onHowToPlay();
+          }}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.infoIcon}>ℹ️</Text>
+        </TouchableOpacity>
+      )}
     </TouchableOpacity>
   );
 };
@@ -91,5 +106,17 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.xs,
     fontWeight: 'bold',
     color: COLORS.background,
+  },
+  infoButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.surface,
+    borderRadius: 20,
+    marginLeft: SPACING.sm,
+  },
+  infoIcon: {
+    fontSize: 20,
   },
 });

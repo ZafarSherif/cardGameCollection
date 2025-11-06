@@ -57,5 +57,40 @@
     "zh": "中文",
     "ja": "日本語",
     "ar": "العربية"
+  },
+  "howToPlay": {
+    "solitaire": {
+      "title": "Comment Jouer au Solitaire",
+      "objective": {
+        "title": "Objectif",
+        "text": "Déplacez toutes les cartes vers les 4 piles de fondation (en haut à droite), triées par couleur de l'As au Roi."
+      },
+      "howTo": {
+        "title": "Comment Jouer",
+        "steps": [
+          "Touchez la pile de réserve (en haut à gauche) pour tirer des cartes",
+          "Glissez les cartes pour créer des séquences descendantes avec des couleurs alternées",
+          "Les Rois vont sur les espaces vides du tableau",
+          "Déplacez d'abord les As vers les fondations, puis construisez par couleur"
+        ]
+      },
+      "scoring": {
+        "title": "Score",
+        "points": [
+          "+10 points pour chaque carte vers la fondation",
+          "+5 points pour révéler les cartes face cachée",
+          "+100 bonus pour gagner"
+        ]
+      },
+      "tips": {
+        "title": "Astuces",
+        "list": [
+          "Déplacez toujours les As et les 2 vers les fondations",
+          "Libérez d'abord les cartes face cachée",
+          "Ne vous précipitez pas - planifiez vos coups",
+          "Utilisez le bouton Annuler si vous êtes bloqué"
+        ]
+      }
+    }
   }
 }

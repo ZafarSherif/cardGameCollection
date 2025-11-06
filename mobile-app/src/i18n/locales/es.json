@@ -57,5 +57,40 @@
     "zh": "中文",
     "ja": "日本語",
     "ar": "العربية"
+  },
+  "howToPlay": {
+    "solitaire": {
+      "title": "Cómo Jugar al Solitario",
+      "objective": {
+        "title": "Objetivo",
+        "text": "Mueve todas las cartas a las 4 pilas de fundación (arriba derecha), ordenadas por palo de As a Rey."
+      },
+      "howTo": {
+        "title": "Cómo Jugar",
+        "steps": [
+          "Toca la pila de reserva (arriba izquierda) para sacar cartas",
+          "Arrastra cartas para formar secuencias descendentes con colores alternados",
+          "Los Reyes van en espacios vacíos del tablero",
+          "Mueve los Ases a las fundaciones primero, luego construye por palo"
+        ]
+      },
+      "scoring": {
+        "title": "Puntuación",
+        "points": [
+          "+10 puntos por cada carta a la fundación",
+          "+5 puntos por revelar cartas boca abajo",
+          "+100 bonus por ganar"
+        ]
+      },
+      "tips": {
+        "title": "Consejos",
+        "list": [
+          "Siempre mueve Ases y 2s a las fundaciones",
+          "Libera primero las cartas boca abajo",
+          "No te apresures - planea tus movimientos",
+          "Usa el botón Deshacer si te atascas"
+        ]
+      }
+    }
   }
 }
