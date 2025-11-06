@@ -77,8 +77,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
                 timeSpent: resultData.timeSeconds,
               });
 
-              // Show win message (you can make this fancier)
-              alert(`${resultData.won ? 'You Won!' : 'Game Over'}\nScore: ${resultData.score}\nCoins Earned: ${resultData.coinsEarned}`);
+              // Unity now handles the win panel UI
+              // React layer just updates stats silently
+              console.log('[RN] Stats updated: +' + resultData.coinsEarned + ' coins');
               break;
           }
         }
