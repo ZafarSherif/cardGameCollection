@@ -4,8 +4,14 @@ import { Platform } from 'react-native';
  * Analytics Service
  * Tracks user events across web and mobile
  *
- * Web: Uses Plausible (privacy-friendly, no cookies)
- * Mobile: Uses Expo Analytics (or can integrate Firebase)
+ * Uses Firebase Analytics for both web and mobile
+ * Provides unified tracking across all platforms
+ *
+ * Future integrations:
+ * - Firebase Analytics (events, user properties)
+ * - Firebase Crashlytics (error tracking)
+ * - AdMob (ad revenue tracking via Firebase)
+ * - RevenueCat (IAP revenue tracking)
  */
 
 interface AnalyticsEvent {
