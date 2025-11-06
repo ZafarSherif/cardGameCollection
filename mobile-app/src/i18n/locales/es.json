@@ -1,0 +1,61 @@
+{
+  "common": {
+    "back": "Atrás",
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "ok": "OK",
+    "save": "Guardar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito"
+  },
+  "home": {
+    "welcomeBack": "Bienvenido de nuevo,",
+    "balance": "Saldo",
+    "level": "Nivel",
+    "games": "Juegos",
+    "winRate": "% Victorias",
+    "chooseGame": "Elige un Juego",
+    "moreGamesComing": "¡Más juegos próximamente!"
+  },
+  "games": {
+    "solitaire": {
+      "name": "Solitario",
+      "description": "¡Juego de cartas clásico. Despeja todas las cartas para ganar!"
+    },
+    "poker": {
+      "name": "Póker",
+      "description": "Póker Texas Hold'em. ¡Próximamente!"
+    },
+    "blackjack": {
+      "name": "Blackjack",
+      "description": "Vence al crupier. ¡Consigue 21!"
+    },
+    "comingSoon": "Próximamente"
+  },
+  "gameScreen": {
+    "unityView": "Vista del Juego Unity",
+    "gameWillLoad": "El juego de {{gameName}} se cargará aquí",
+    "integrateNext": "Integraremos la vista Unity en los próximos pasos",
+    "controlsPlaceholder": "Los controles del juego aparecerán aquí"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "sound": "Sonido",
+    "music": "Música",
+    "notifications": "Notificaciones",
+    "about": "Acerca de"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "pt": "Português",
+    "zh": "中文",
+    "ja": "日本語",
+    "ar": "العربية"
+  }
+}

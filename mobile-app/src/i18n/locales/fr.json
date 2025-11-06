@@ -1,0 +1,61 @@
+{
+  "common": {
+    "back": "Retour",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "ok": "OK",
+    "save": "Enregistrer",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès"
+  },
+  "home": {
+    "welcomeBack": "Bon retour,",
+    "balance": "Solde",
+    "level": "Niveau",
+    "games": "Jeux",
+    "winRate": "% Victoires",
+    "chooseGame": "Choisir un Jeu",
+    "moreGamesComing": "Plus de jeux bientôt !"
+  },
+  "games": {
+    "solitaire": {
+      "name": "Solitaire",
+      "description": "Jeu de cartes classique. Enlevez toutes les cartes pour gagner !"
+    },
+    "poker": {
+      "name": "Poker",
+      "description": "Poker Texas Hold'em. Bientôt disponible !"
+    },
+    "blackjack": {
+      "name": "Blackjack",
+      "description": "Battez le croupier. Obtenez 21 !"
+    },
+    "comingSoon": "Bientôt disponible"
+  },
+  "gameScreen": {
+    "unityView": "Vue du Jeu Unity",
+    "gameWillLoad": "Le jeu {{gameName}} sera chargé ici",
+    "integrateNext": "Nous intégrerons la vue Unity dans les prochaines étapes",
+    "controlsPlaceholder": "Les contrôles du jeu apparaîtront ici"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "sound": "Son",
+    "music": "Musique",
+    "notifications": "Notifications",
+    "about": "À propos"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "pt": "Português",
+    "zh": "中文",
+    "ja": "日本語",
+    "ar": "العربية"
+  }
+}

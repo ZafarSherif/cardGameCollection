@@ -1,0 +1,61 @@
+{
+  "common": {
+    "back": "Voltar",
+    "close": "Fechar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "ok": "OK",
+    "save": "Salvar",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso"
+  },
+  "home": {
+    "welcomeBack": "Bem-vindo de volta,",
+    "balance": "Saldo",
+    "level": "Nível",
+    "games": "Jogos",
+    "winRate": "Taxa de Vitória",
+    "chooseGame": "Escolha um Jogo",
+    "moreGamesComing": "Mais jogos em breve!"
+  },
+  "games": {
+    "solitaire": {
+      "name": "Paciência",
+      "description": "Jogo de cartas clássico. Limpe todas as cartas para ganhar!"
+    },
+    "poker": {
+      "name": "Pôquer",
+      "description": "Pôquer Texas Hold'em. Em breve!"
+    },
+    "blackjack": {
+      "name": "Blackjack",
+      "description": "Vença o dealer. Consiga 21!"
+    },
+    "comingSoon": "Em Breve"
+  },
+  "gameScreen": {
+    "unityView": "Visualização do Jogo Unity",
+    "gameWillLoad": "O jogo {{gameName}} será carregado aqui",
+    "integrateNext": "Integraremos a visualização Unity nas próximas etapas",
+    "controlsPlaceholder": "Os controles do jogo aparecerão aqui"
+  },
+  "settings": {
+    "title": "Configurações",
+    "language": "Idioma",
+    "sound": "Som",
+    "music": "Música",
+    "notifications": "Notificações",
+    "about": "Sobre"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "pt": "Português",
+    "zh": "中文",
+    "ja": "日本語",
+    "ar": "العربية"
+  }
+}

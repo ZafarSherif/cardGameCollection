@@ -1,0 +1,61 @@
+{
+  "common": {
+    "back": "Back",
+    "close": "Close",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "ok": "OK",
+    "save": "Save",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "home": {
+    "welcomeBack": "Welcome back,",
+    "balance": "Balance",
+    "level": "Level",
+    "games": "Games",
+    "winRate": "Win Rate",
+    "chooseGame": "Choose a Game",
+    "moreGamesComing": "More games coming soon!"
+  },
+  "games": {
+    "solitaire": {
+      "name": "Solitaire",
+      "description": "Classic card game. Clear all cards to win!"
+    },
+    "poker": {
+      "name": "Poker",
+      "description": "Texas Hold'em poker. Coming soon!"
+    },
+    "blackjack": {
+      "name": "Blackjack",
+      "description": "Beat the dealer. Get 21!"
+    },
+    "comingSoon": "Coming Soon"
+  },
+  "gameScreen": {
+    "unityView": "Unity Game View",
+    "gameWillLoad": "The {{gameName}} game will be loaded here",
+    "integrateNext": "We'll integrate the Unity view in the next steps",
+    "controlsPlaceholder": "Game controls will appear here"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "sound": "Sound",
+    "music": "Music",
+    "notifications": "Notifications",
+    "about": "About"
+  },
+  "languages": {
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "de": "Deutsch",
+    "pt": "Português",
+    "zh": "中文",
+    "ja": "日本語",
+    "ar": "العربية"
+  }
+}
