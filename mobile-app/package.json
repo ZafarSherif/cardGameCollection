@@ -1,6 +1,7 @@
 {
   "name": "mobile-app",
   "version": "1.0.0",
+  "homepage": "https://ZafarSherif.github.io/cardGameCollection",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
