@@ -79,6 +79,10 @@ namespace CardGames.Core
         /// </summary>
         private bool CanAcceptToTableau(Card card)
         {
+            // Cheat mode: allow any card on empty piles (for testing win condition)
+            if (CardGames.Solitaire.SolitaireGameManager.CheatModeEnabled && IsEmpty())
+                return true;
+
             // Empty tableau can only accept King
             if (IsEmpty())
                 return card.CardRank == Card.Rank.King;

@@ -22,6 +22,10 @@ namespace CardGames.Solitaire
         [Header("Game Settings")]
         [SerializeField] private int drawCount = 3; // Draw 1 or 3 cards from stock
 
+        [Header("Cheat Mode (Testing)")]
+        [SerializeField] private bool cheatMode = false;
+        public static bool CheatModeEnabled { get; private set; } = false;
+
         [Header("Scoring")]
         [SerializeField] private int score = 0;
         [SerializeField] private int moves = 0;
@@ -68,6 +72,18 @@ namespace CardGames.Solitaire
         private void Start()
         {
             InitializeGame();
+            CheatModeEnabled = cheatMode;
+        }
+
+        private void Update()
+        {
+            // Toggle cheat mode with C key
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                cheatMode = !cheatMode;
+                CheatModeEnabled = cheatMode;
+                Debug.Log($"[CheatMode] {(cheatMode ? "ENABLED" : "DISABLED")} - Any card can go on empty tableau piles");
+            }
         }
 
         /// <summary>
