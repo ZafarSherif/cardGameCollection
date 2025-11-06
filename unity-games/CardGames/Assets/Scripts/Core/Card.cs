@@ -96,7 +96,7 @@ namespace CardGames.Core
             if (cardFrontRenderer != null && frontSprite != null)
             {
                 cardFrontRenderer.sprite = frontSprite;
-                Debug.Log($"Card front sprite set: {rank} of {suit}");
+                // Debug.Log($"Card front sprite set: {rank} of {suit}");
             }
             else if (cardFrontRenderer != null)
             {

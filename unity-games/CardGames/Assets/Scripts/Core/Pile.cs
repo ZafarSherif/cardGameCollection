@@ -179,10 +179,13 @@ namespace CardGames.Core
         /// </summary>
         private void UpdateCardPositions()
         {
+            int faceDownCount = 0;
             for (int i = 0; i < cards.Count; i++)
             {
                 Card card = cards[i];
-                Vector3 position = GetCardPosition(i, card.IsFaceUp);
+                if (!card.IsFaceUp)
+                    faceDownCount++;
+                Vector3 position = GetCardPosition(i, faceDownCount, card.IsFaceUp);
 
                 // Smooth movement (can be replaced with animation)
                 card.transform.localPosition = position;
@@ -227,7 +230,7 @@ namespace CardGames.Core
         /// <summary>
         /// Calculate position for a card at a specific index
         /// </summary>
-        private Vector3 GetCardPosition(int index, bool isFaceUp)
+        private Vector3 GetCardPosition(int index, int faceDownCount, bool isFaceUp)
         {
             Vector3 position = Vector3.zero;
 
@@ -244,8 +247,10 @@ namespace CardGames.Core
                     // Fan cards vertically
                     if (fanCards)
                     {
-                        float spacing = isFaceUp ? cardSpacing : faceDownSpacing;
-                        position.y = -index * spacing;
+                        if (isFaceUp)
+                            position.y = -faceDownCount * faceDownSpacing - (index - faceDownCount) * cardSpacing;
+                        else
+                            position.y = -index * faceDownSpacing;
                     }
                     break;
             }
