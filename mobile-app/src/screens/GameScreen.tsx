@@ -13,6 +13,7 @@ import { RootStackParamList } from '../types';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
 import { useLanguage } from '../i18n/LanguageContext';
 import { usePlayerStore } from '../store/playerStore';
+import { analytics } from '../services/analytics';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -32,10 +33,19 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
   const { addGameResult, updateBalance } = usePlayerStore();
   const [score, setScore] = useState(0);
   const [moves, setMoves] = useState(0);
+  const [gameStartTime] = useState(Date.now());
 
   const handleBack = () => {
+    // Track game quit
+    const timeSpent = Math.floor((Date.now() - gameStartTime) / 1000);
+    analytics.trackGameQuit(gameType, timeSpent);
     navigation.goBack();
   };
+
+  // Track game start
+  useEffect(() => {
+    analytics.trackGameStart(gameType);
+  }, [gameType]);
 
   // Listen for messages from Unity (Web only for now)
   useEffect(() => {
@@ -64,6 +74,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
             case 'GameComplete':
               const resultData = JSON.parse(event.data.data);
               console.log('[RN] Game Complete!', resultData);
+
+              // Track game completion
+              analytics.trackGameComplete(
+                gameType,
+                resultData.won,
+                resultData.score,
+                resultData.timeSeconds
+              );
 
               // Update player balance
               updateBalance(resultData.coinsEarned);
