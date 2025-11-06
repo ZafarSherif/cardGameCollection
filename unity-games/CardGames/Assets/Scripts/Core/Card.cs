@@ -123,8 +123,15 @@ namespace CardGames.Core
         /// </summary>
         public void SetFaceUp(bool faceUp)
         {
+            bool wasFlipped = (isFaceUp != faceUp);
             isFaceUp = faceUp;
             UpdateVisuals();
+
+            // Play flip sound when card is flipped face up
+            if (wasFlipped && faceUp && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayCardFlip();
+            }
         }
 
         /// <summary>

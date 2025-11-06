@@ -30,10 +30,37 @@ namespace CardGames.Solitaire
         private float gameStartTime;
         private bool gameWon = false;
 
+        // Undo functionality
+        private Stack<MoveRecord> moveHistory = new Stack<MoveRecord>();
+        private const int maxUndoSteps = 10; // Limit undo history
+
         // Events for UI updates
         public System.Action<int> OnScoreChanged;
         public System.Action<int> OnMovesChanged;
         public System.Action<bool, int, int> OnGameEnd; // won, score, time
+
+        /// <summary>
+        /// Record of a move for undo functionality
+        /// </summary>
+        private class MoveRecord
+        {
+            public List<Card> cards;
+            public Pile sourcePile;
+            public Pile targetPile;
+            public bool sourceCardWasFaceDown; // If we flipped a card
+            public int previousScore;
+            public int previousMoves;
+
+            public MoveRecord(List<Card> cards, Pile source, Pile target, bool cardFlipped, int score, int moves)
+            {
+                this.cards = new List<Card>(cards);
+                this.sourcePile = source;
+                this.targetPile = target;
+                this.sourceCardWasFaceDown = cardFlipped;
+                this.previousScore = score;
+                this.previousMoves = moves;
+            }
+        }
 
         private void Start()
         {
@@ -49,6 +76,7 @@ namespace CardGames.Solitaire
             moves = 0;
             gameWon = false;
             gameStartTime = Time.time;
+            moveHistory.Clear();
 
             ClearGame();
             CreateDeck();
@@ -195,6 +223,12 @@ namespace CardGames.Solitaire
                 }
             }
 
+            // Play card place sound for stock draw
+            if (CardGames.Core.AudioManager.Instance != null)
+            {
+                CardGames.Core.AudioManager.Instance.PlayCardPlace();
+            }
+
             moves++;
             UpdateUI();
         }
@@ -253,11 +287,31 @@ namespace CardGames.Solitaire
             if (!targetPile.CanAcceptCard(bottomCard))
                 return false;
 
+            // Check if we'll flip a card (for undo)
+            bool willFlipCard = false;
+            if (sourcePile.Type == Pile.PileType.Tableau && sourcePile.CardCount > cards.Count)
+            {
+                Card cardThatWillBeOnTop = sourcePile.Cards[sourcePile.Cards.IndexOf(bottomCard) - 1];
+                if (cardThatWillBeOnTop != null && !cardThatWillBeOnTop.IsFaceUp)
+                {
+                    willFlipCard = true;
+                }
+            }
+
+            // Record move for undo (before making changes)
+            RecordMove(cards, sourcePile, targetPile, willFlipCard);
+
             // Remove cards from source pile
             sourcePile.RemoveCardsFrom(bottomCard);
 
             // Add cards to target pile
             targetPile.AddCards(cards);
+
+            // Play card place sound
+            if (CardGames.Core.AudioManager.Instance != null)
+            {
+                CardGames.Core.AudioManager.Instance.PlayCardPlace();
+            }
 
             // Flip top card of source pile if needed
             if (sourcePile.Type == Pile.PileType.Tableau)
@@ -379,6 +433,101 @@ namespace CardGames.Solitaire
             public int moves;
             public float gameTime;
             public bool isWon;
+        }
+
+        /// <summary>
+        /// Restart the current game
+        /// </summary>
+        public void RestartGame()
+        {
+            Debug.Log("[GameManager] Restarting game");
+            InitializeGame();
+        }
+
+        /// <summary>
+        /// Record a move for undo functionality
+        /// </summary>
+        private void RecordMove(List<Card> cards, Pile source, Pile target, bool cardWasFlipped)
+        {
+            // Limit undo history
+            if (moveHistory.Count >= maxUndoSteps)
+            {
+                // Remove oldest move (at bottom of stack)
+                Stack<MoveRecord> temp = new Stack<MoveRecord>();
+                while (moveHistory.Count > maxUndoSteps - 1)
+                {
+                    temp.Push(moveHistory.Pop());
+                }
+                moveHistory.Clear();
+                while (temp.Count > 0)
+                {
+                    moveHistory.Push(temp.Pop());
+                }
+            }
+
+            MoveRecord record = new MoveRecord(cards, source, target, cardWasFlipped, score, moves);
+            moveHistory.Push(record);
+
+            Debug.Log($"[Undo] Recorded move: {cards.Count} card(s) from {source.Type} to {target.Type}");
+        }
+
+        /// <summary>
+        /// Undo the last move
+        /// </summary>
+        public bool UndoLastMove()
+        {
+            if (moveHistory.Count == 0)
+            {
+                Debug.Log("[Undo] No moves to undo");
+                return false;
+            }
+
+            MoveRecord lastMove = moveHistory.Pop();
+
+            Debug.Log($"[Undo] Undoing move: {lastMove.cards.Count} card(s) from {lastMove.targetPile.Type} back to {lastMove.sourcePile.Type}");
+
+            // Move cards back from target to source
+            foreach (Card card in lastMove.cards)
+            {
+                lastMove.targetPile.RemoveCardsFrom(card);
+            }
+            lastMove.sourcePile.AddCards(lastMove.cards);
+
+            // If we flipped a card during the original move, flip it back
+            if (lastMove.sourceCardWasFaceDown && lastMove.sourcePile.Type == Pile.PileType.Tableau)
+            {
+                Card topCard = lastMove.sourcePile.GetTopCard();
+                if (topCard != null && topCard.IsFaceUp)
+                {
+                    // Find the card that was flipped (before the moved cards)
+                    int movedCardIndex = lastMove.sourcePile.Cards.IndexOf(lastMove.cards[0]);
+                    if (movedCardIndex > 0)
+                    {
+                        Card flippedCard = lastMove.sourcePile.Cards[movedCardIndex - 1];
+                        if (flippedCard != null)
+                        {
+                            flippedCard.SetFaceUp(false);
+                        }
+                    }
+                }
+            }
+
+            // Restore score and moves
+            score = lastMove.previousScore;
+            moves = lastMove.previousMoves;
+
+            // Refresh UI
+            UpdateUI();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Check if undo is available
+        /// </summary>
+        public bool CanUndo()
+        {
+            return moveHistory.Count > 0;
         }
     }
 }
