@@ -1,14 +1,17 @@
 import { Platform } from 'react-native';
+import { logEvent, setUserId, setUserProperties } from 'firebase/analytics';
+import { analytics as firebaseAnalytics } from '../config/firebase';
 
 /**
  * Analytics Service
- * Tracks user events across web and mobile
+ * Tracks user events across web and mobile using Firebase Analytics
  *
- * Uses Firebase Analytics for both web and mobile
  * Provides unified tracking across all platforms
  *
- * Future integrations:
+ * Current integrations:
  * - Firebase Analytics (events, user properties)
+ *
+ * Future integrations:
  * - Firebase Crashlytics (error tracking)
  * - AdMob (ad revenue tracking via Firebase)
  * - RevenueCat (IAP revenue tracking)
@@ -26,7 +29,7 @@ class AnalyticsService {
    * Initialize analytics
    */
   initialize() {
-    console.log('[Analytics] Initialized for platform:', Platform.OS);
+    console.log('[Analytics] Firebase Analytics initialized for platform:', Platform.OS);
   }
 
   /**
@@ -37,10 +40,16 @@ class AnalyticsService {
 
     console.log('[Analytics] Event:', eventName, properties);
 
-    if (Platform.OS === 'web') {
-      this.trackWebEvent(eventName, properties);
+    if (Platform.OS === 'web' && firebaseAnalytics) {
+      try {
+        logEvent(firebaseAnalytics, eventName, properties as any);
+      } catch (error) {
+        console.error('[Analytics] Error logging event:', error);
+      }
     } else {
-      this.trackMobileEvent(eventName, properties);
+      // For mobile, Firebase Analytics would work here too
+      // For now just log
+      console.log('[Mobile Analytics]', eventName, properties);
     }
   }
 
@@ -52,11 +61,18 @@ class AnalyticsService {
 
     console.log('[Analytics] Page view:', pageName);
 
-    if (Platform.OS === 'web') {
-      // Plausible automatically tracks page views
-      // Just log for debugging
+    if (Platform.OS === 'web' && firebaseAnalytics) {
+      try {
+        logEvent(firebaseAnalytics, 'page_view', {
+          page_title: pageName,
+          page_location: window.location.href,
+          page_path: window.location.pathname,
+        });
+      } catch (error) {
+        console.error('[Analytics] Error logging page view:', error);
+      }
     } else {
-      this.trackMobileEvent('screen_view', { screen_name: pageName });
+      this.trackEvent('screen_view', { screen_name: pageName });
     }
   }
 
@@ -101,25 +117,31 @@ class AnalyticsService {
   }
 
   /**
-   * Web analytics (Plausible)
+   * Set user ID for analytics
    */
-  private trackWebEvent(eventName: string, properties?: Record<string, string | number | boolean>) {
-    // @ts-ignore - plausible is loaded via script tag
-    if (typeof window !== 'undefined' && window.plausible) {
-      // @ts-ignore
-      window.plausible(eventName, { props: properties });
+  setUser(userId: string) {
+    if (Platform.OS === 'web' && firebaseAnalytics) {
+      try {
+        setUserId(firebaseAnalytics, userId);
+        console.log('[Analytics] User ID set:', userId);
+      } catch (error) {
+        console.error('[Analytics] Error setting user ID:', error);
+      }
     }
   }
 
   /**
-   * Mobile analytics
+   * Set user properties
    */
-  private trackMobileEvent(eventName: string, properties?: Record<string, string | number | boolean>) {
-    // For now just log - can integrate Firebase Analytics later
-    console.log('[Mobile Analytics]', eventName, properties);
-
-    // TODO: Integrate Firebase Analytics or similar
-    // firebaseAnalytics.logEvent(eventName, properties);
+  setUserProperty(propertyName: string, propertyValue: string) {
+    if (Platform.OS === 'web' && firebaseAnalytics) {
+      try {
+        setUserProperties(firebaseAnalytics, { [propertyName]: propertyValue });
+        console.log('[Analytics] User property set:', propertyName, propertyValue);
+      } catch (error) {
+        console.error('[Analytics] Error setting user property:', error);
+      }
+    }
   }
 
   /**

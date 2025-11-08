@@ -41,10 +41,8 @@ namespace CardGames.Solitaire
         private Stack<MoveRecord> moveHistory = new Stack<MoveRecord>();
         private const int maxUndoSteps = 10; // Limit undo history
 
-        // Events for UI updates
-        public System.Action<int> OnScoreChanged;
-        public System.Action<int> OnMovesChanged;
-        public System.Action<bool, int, int> OnGameEnd; // won, score, time
+        // React Native communication
+        private ReactBridge reactBridge;
 
         /// <summary>
         /// Record of a move for undo functionality
@@ -71,8 +69,41 @@ namespace CardGames.Solitaire
 
         private void Start()
         {
+            // Get ReactBridge reference
+            reactBridge = ReactBridge.Instance;
+
+            // Subscribe to React messages
+            ReactBridge.OnReactMessageReceived += OnReactMessage;
+
+            // Position piles first, then initialize game
+            PositionPilesInSquare();
             InitializeGame();
             CheatModeEnabled = cheatMode;
+
+            // Start timer update coroutine (updates React UI every second)
+            StartCoroutine(UpdateTimerCoroutine());
+        }
+
+        private void OnDestroy()
+        {
+            // Unsubscribe from React messages
+            ReactBridge.OnReactMessageReceived -= OnReactMessage;
+        }
+
+        /// <summary>
+        /// Update timer in React UI every second
+        /// </summary>
+        private IEnumerator UpdateTimerCoroutine()
+        {
+            Debug.Log("[Timer] Coroutine started");
+            while (true)
+            {
+                yield return new WaitForSeconds(1f);
+                if (!gameWon)
+                {
+                    SendGameStateToReact();
+                }
+            }
         }
 
         private void Update()
@@ -83,6 +114,128 @@ namespace CardGames.Solitaire
                 cheatMode = !cheatMode;
                 CheatModeEnabled = cheatMode;
                 Debug.Log($"[CheatMode] {(cheatMode ? "ENABLED" : "DISABLED")} - Any card can go on empty tableau piles");
+            }
+        }
+
+        /// <summary>
+        /// Called by ResponsiveLayout when screen size changes
+        /// </summary>
+        private void OnGameAreaChanged()
+        {
+            PositionPilesInSquare();
+        }
+
+        /// <summary>
+        /// Position all piles within the square game area
+        /// </summary>
+        private void PositionPilesInSquare()
+        {
+            ResponsiveLayout layout = GetComponent<ResponsiveLayout>();
+            if (layout == null)
+            {
+                Debug.LogWarning("[SolitaireGameManager] ResponsiveLayout component not found!");
+                return;
+            }
+
+            Rect gameArea = layout.GetGameAreaBounds();
+            float squareSize = layout.GetSquareSize();
+
+            Debug.Log($"[SolitaireGameManager] Positioning piles in square (size: {squareSize:F2})");
+
+            // Calculate positions within the square
+            float cardWidth = squareSize / 12f; // Card size reference for spacing
+            float cardHeight = cardWidth * 1.4f; // Card aspect ratio
+
+            // Tableau piles - 7 columns evenly spaced
+            float tableauSpacing = squareSize / 7f; // Maximum spacing between columns
+            float tableauStartX = gameArea.xMin + (squareSize - tableauSpacing * 6) / 2; // Center the 7 piles
+            float tableauY = gameArea.yMin + squareSize * 0.47f; // Position 47% up from bottom (more room for card stacks)
+
+            for (int i = 0; i < 7; i++)
+            {
+                if (tableauPiles[i] != null)
+                {
+                    float x = tableauStartX + (i * tableauSpacing);
+                    tableauPiles[i].transform.position = new Vector3(x, tableauY, 0);
+                }
+            }
+
+            // Foundation piles - 4 piles at top right
+            float foundationSpacing = cardWidth * 1.8f; // More spacing between foundation piles
+            float foundationStartX = gameArea.xMax - (foundationSpacing * 3.8f); // Moved to the right
+            float foundationY = gameArea.yMax - squareSize * 0.18f; // Position 18% down from top (smaller gap)
+
+            for (int i = 0; i < 4; i++)
+            {
+                if (foundationPiles[i] != null)
+                {
+                    float x = foundationStartX + (i * foundationSpacing);
+                    foundationPiles[i].transform.position = new Vector3(x, foundationY, 0);
+                }
+            }
+
+            // Stock and Waste piles - top left
+            float stockX = gameArea.xMin + cardWidth * 0.8f;
+            float stockY = foundationY; // Same Y as foundation
+
+            if (stockPile != null)
+                stockPile.transform.position = new Vector3(stockX, stockY, 0);
+
+            if (wastePile != null)
+                wastePile.transform.position = new Vector3(stockX + cardWidth * 2.0f, stockY, 0); // More space from stock pile
+
+            // Scale all cards based on square size
+            ScaleAllCards(cardWidth);
+
+            Debug.Log($"[SolitaireGameManager] Piles positioned successfully");
+        }
+
+        /// <summary>
+        /// Scale all cards proportionally to the square size
+        /// </summary>
+        private void ScaleAllCards(float targetCardWidth)
+        {
+            // Calculate scale based on target card width
+            // Card prefab is manually scaled to 0.55, use larger multiplier to maintain good size
+            float baseScale = targetCardWidth * 1.2f;
+
+            Debug.Log($"[SolitaireGameManager] Scaling cards to {baseScale:F3}");
+
+            // Scale all cards in all piles
+            ScalePileCards(stockPile, baseScale);
+            ScalePileCards(wastePile, baseScale);
+
+            foreach (var pile in tableauPiles)
+            {
+                ScalePileCards(pile, baseScale);
+            }
+
+            foreach (var pile in foundationPiles)
+            {
+                ScalePileCards(pile, baseScale);
+            }
+        }
+
+        /// <summary>
+        /// Scale all cards in a specific pile
+        /// </summary>
+        private void ScalePileCards(Pile pile, float scale)
+        {
+            if (pile == null) return;
+
+            int cardCount = 0;
+            foreach (Card card in pile.Cards)
+            {
+                if (card != null)
+                {
+                    card.transform.localScale = new Vector3(scale, scale, 1f);
+                    cardCount++;
+                }
+            }
+
+            if (cardCount > 0)
+            {
+                Debug.Log($"[SolitaireGameManager] Scaled {cardCount} cards in {pile.Type} pile to {scale:F3}");
             }
         }
 
@@ -106,6 +259,9 @@ namespace CardGames.Solitaire
             initialDeckOrder.AddRange(deck);
 
             DealCards();
+
+            // Position and scale piles/cards after dealing
+            PositionPilesInSquare();
 
             UpdateUI();
         }
@@ -402,7 +558,7 @@ namespace CardGames.Solitaire
                 score -= 15;
             }
 
-            OnScoreChanged?.Invoke(score);
+            SendGameStateToReact();
         }
 
         /// <summary>
@@ -424,7 +580,7 @@ namespace CardGames.Solitaire
             // Bonus for completing game
             score += 100;
 
-            OnGameEnd?.Invoke(true, score, gameTime);
+            SendGameEndToReact(true, score, gameTime);
         }
 
         /// <summary>
@@ -432,8 +588,7 @@ namespace CardGames.Solitaire
         /// </summary>
         private void UpdateUI()
         {
-            OnScoreChanged?.Invoke(score);
-            OnMovesChanged?.Invoke(moves);
+            SendGameStateToReact();
         }
 
         /// <summary>
@@ -587,6 +742,100 @@ namespace CardGames.Solitaire
         public bool CanUndo()
         {
             return moveHistory.Count > 0;
+        }
+
+        // ==========================================
+        // React Native Communication
+        // ==========================================
+
+        /// <summary>
+        /// Send current game state to React Native
+        /// </summary>
+        private void SendGameStateToReact()
+        {
+            if (reactBridge == null) return;
+
+            GameStatePayload payload = new GameStatePayload
+            {
+                score = this.score,
+                moves = this.moves,
+                time = GetFormattedTime()
+            };
+
+            reactBridge.SendToReact("gameState", payload.ToJson());
+        }
+
+        /// <summary>
+        /// Send game end event to React Native
+        /// </summary>
+        private void SendGameEndToReact(bool won, int finalScore, int gameTime)
+        {
+            if (reactBridge == null) return;
+
+            GameEndPayload payload = new GameEndPayload
+            {
+                won = won,
+                finalScore = finalScore,
+                finalTime = FormatTime(gameTime)
+            };
+
+            reactBridge.SendToReact("gameEnd", payload.ToJson());
+        }
+
+        /// <summary>
+        /// Receive actions from React Native
+        /// Called by ReactBridge via BroadcastMessage
+        /// </summary>
+        private void OnReactMessage(string json)
+        {
+            try
+            {
+                ReactAction action = ReactAction.FromJson(json);
+
+                Debug.Log($"[SolitaireGameManager] Received action: {action.action}");
+
+                switch (action.action)
+                {
+                    case "newGame":
+                        InitializeGame();
+                        break;
+
+                    case "restart":
+                        RestartGame();
+                        break;
+
+                    case "undo":
+                        UndoLastMove();
+                        break;
+
+                    default:
+                        Debug.LogWarning($"[SolitaireGameManager] Unknown action: {action.action}");
+                        break;
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[SolitaireGameManager] Failed to parse React message: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Format time as MM:SS
+        /// </summary>
+        private string GetFormattedTime()
+        {
+            int elapsed = Mathf.FloorToInt(Time.time - gameStartTime);
+            return FormatTime(elapsed);
+        }
+
+        /// <summary>
+        /// Format seconds as MM:SS
+        /// </summary>
+        private string FormatTime(int totalSeconds)
+        {
+            int minutes = totalSeconds / 60;
+            int seconds = totalSeconds % 60;
+            return $"{minutes:00}:{seconds:00}";
         }
     }
 }
