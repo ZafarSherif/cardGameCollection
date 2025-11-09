@@ -11,17 +11,28 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const RootNavigator: React.FC = () => {
   // Configure linking for GitHub Pages subdirectory
   const linking = Platform.OS === 'web' ? {
-    prefixes: ['https://ZafarSherif.github.io/cardGameCollection'],
+    prefixes: ['https://ZafarSherif.github.io/cardGameCollection/', 'http://localhost:19006/'],
     config: {
       screens: {
         Home: '',
         Game: 'game',
       },
     },
+    // Ensure the app respects the base path from index.html
+    enabled: true,
+    getPathFromState(state, config) {
+      // Preserve the /cardGameCollection base path in the URL
+      return state?.routes?.[state.index]?.name === 'Home' ? '' : state?.routes?.[state.index]?.name?.toLowerCase() || '';
+    },
   } : undefined;
 
   return (
-    <NavigationContainer linking={linking}>
+    <NavigationContainer
+      linking={linking}
+      documentTitle={{
+        formatter: (options, route) => `Card Games - ${route?.name || 'Home'}`,
+      }}
+    >
       <Stack.Navigator
         initialRouteName="Home"
         screenOptions={{

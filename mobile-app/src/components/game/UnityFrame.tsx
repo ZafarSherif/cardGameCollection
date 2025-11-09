@@ -28,13 +28,17 @@ export const UnityFrame: React.FC<UnityFrameProps> = ({ webViewRef, onMessage, s
       const basePath = window.location.pathname.includes('/cardGameCollection')
         ? '/cardGameCollection/unity/index.html'
         : '/unity/index.html';
+      console.log('[UnityFrame] Using Unity path:', basePath);
+      console.log('[UnityFrame] Current location:', window.location.href);
       return basePath;
     };
+
+    const unityPath = getUnityPath();
 
     return (
       <iframe
         ref={webViewRef as any}
-        src={getUnityPath()}
+        src={unityPath}
         style={{
           width: '100%',
           height: '100%',

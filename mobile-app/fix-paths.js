@@ -5,6 +5,8 @@ const distDir = path.join(__dirname, 'dist');
 const htmlPath = path.join(distDir, 'index.html');
 const unityHtmlPath = path.join(distDir, 'unity', 'index.html');
 const nojekyllPath = path.join(distDir, '.nojekyll');
+const html404Path = path.join(distDir, '404.html');
+const public404Path = path.join(__dirname, 'public', '404.html');
 
 // Fix main React Native app index.html
 let html = fs.readFileSync(htmlPath, 'utf8');
@@ -14,6 +16,24 @@ html = html.replace(
   '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />',
   '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />\n    <base href="/cardGameCollection/">'
 );
+
+// Add SPA redirect script for GitHub Pages to handle reloads
+const spaRedirectScript = `
+    <script type="text/javascript">
+      // GitHub Pages SPA redirect handler
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>`;
+
+html = html.replace('</head>', spaRedirectScript + '\n  </head>');
 
 // Convert absolute paths to relative paths so base tag works
 // Fix favicon
@@ -41,6 +61,12 @@ fs.writeFileSync(nojekyllPath, '');
 // Create .gitignore in dist to ensure Build folder is included
 const gitignorePath = path.join(distDir, '.gitignore');
 fs.writeFileSync(gitignorePath, '# Include everything\n!*\n');
+
+// Copy 404.html for GitHub Pages SPA support
+if (fs.existsSync(public404Path)) {
+  fs.copyFileSync(public404Path, html404Path);
+  console.log('✅ Copied 404.html for GitHub Pages SPA support');
+}
 
 console.log('✅ Fixed paths in index.html');
 console.log('✅ Fixed paths in unity/index.html');
