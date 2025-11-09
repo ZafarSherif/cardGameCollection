@@ -123,9 +123,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
         {isLandscape && (
           <View style={styles.sidePanel}>
             <TouchableOpacity style={styles.backButtonLandscape} onPress={handleBack}>
-              <Text style={styles.backButtonText}>←</Text>
+              <Text style={styles.backButtonText}>← {t.common.back}</Text>
             </TouchableOpacity>
-            <GameHeader score={gameState.score} moves={gameState.moves} time={gameState.time} />
+            <GameHeader
+              score={gameState.score}
+              moves={gameState.moves}
+              time={gameState.time}
+              orientation={orientation}
+            />
           </View>
         )}
 
@@ -191,9 +196,12 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
   },
   backButtonLandscape: {
-    paddingHorizontal: SPACING.sm,
+    paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
-    alignSelf: 'flex-start',
+    marginHorizontal: SPACING.sm,
+    marginBottom: SPACING.md,
+    backgroundColor: COLORS.surface,
+    borderRadius: 8,
   },
   backButtonText: {
     fontSize: FONT_SIZES.md,

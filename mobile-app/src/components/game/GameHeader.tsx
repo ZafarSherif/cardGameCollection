@@ -5,11 +5,19 @@ interface GameHeaderProps {
   score: number;
   moves: number;
   time: string;
+  orientation?: 'portrait' | 'landscape';
 }
 
-export const GameHeader: React.FC<GameHeaderProps> = ({ score, moves, time }) => {
+export const GameHeader: React.FC<GameHeaderProps> = ({
+  score,
+  moves,
+  time,
+  orientation = 'portrait'
+}) => {
+  const isLandscape = orientation === 'landscape';
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isLandscape && styles.containerLandscape]}>
       <View style={styles.stat}>
         <Text style={styles.label}>Score</Text>
         <Text style={styles.value}>{score}</Text>
@@ -34,8 +42,14 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#2c3e50',
   },
+  containerLandscape: {
+    flexDirection: 'column',
+    padding: 12,
+    justifyContent: 'center',
+  },
   stat: {
     alignItems: 'center',
+    marginVertical: 8,
   },
   label: {
     color: '#95a5a6',

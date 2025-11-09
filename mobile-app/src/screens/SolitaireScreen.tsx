@@ -37,7 +37,12 @@ export const SolitaireScreen: React.FC = () => {
         {/* Left panel in landscape */}
         {isLandscape && (
           <View style={styles.sidePanel}>
-            <GameHeader score={gameState.score} moves={gameState.moves} time={gameState.time} />
+            <GameHeader
+              score={gameState.score}
+              moves={gameState.moves}
+              time={gameState.time}
+              orientation={orientation}
+            />
           </View>
         )}
 

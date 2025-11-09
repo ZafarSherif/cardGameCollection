@@ -41,15 +41,17 @@ const styles = StyleSheet.create({
   },
   containerLandscape: {
     flexDirection: 'column',
-    padding: 8,
+    padding: 12,
     justifyContent: 'center',
+    alignItems: 'stretch',
   },
   button: {
     backgroundColor: '#3498db',
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderRadius: 8,
-    marginVertical: 4,
+    marginVertical: 8,
+    minWidth: 100,
   },
   buttonText: {
     color: '#fff',

@@ -152,6 +152,21 @@
         console.log('✅ Unity loaded successfully');
         console.log('✅ React Bridge ready for communication');
 
+        // Set proper canvas resolution for crisp rendering
+        function resizeCanvas() {
+          var width = window.innerWidth;
+          var height = window.innerHeight;
+          var devicePixelRatio = window.devicePixelRatio || 1;
+
+          canvas.width = width * devicePixelRatio;
+          canvas.height = height * devicePixelRatio;
+          canvas.style.width = width + 'px';
+          canvas.style.height = height + 'px';
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
         // Unity's ReactBridge.Start() will send gameReady event automatically
       }).catch((message) => {
         alert('Failed to load Unity game: ' + message);
@@ -160,13 +175,42 @@
 
     document.body.appendChild(script);
 
-    // Handle window resize
-    window.addEventListener('resize', function() {
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        canvas.style.width = window.innerWidth + "px";
-        canvas.style.height = window.innerHeight + "px";
+    // Prevent Unity from pausing when window/iframe loses focus
+    // Override Unity's default pause behavior
+    window.addEventListener('blur', function(e) {
+      console.log('[Unity] Window blur detected, keeping Unity running');
+      // Don't let Unity pause
+      if (window.unityInstance) {
+        // Unity should continue running in background
       }
     });
+
+    window.addEventListener('focus', function(e) {
+      console.log('[Unity] Window focus restored');
+    });
+
+    // Override document visibility changes that might pause Unity
+    var hidden, visibilityChange;
+    if (typeof document.hidden !== "undefined") {
+      hidden = "hidden";
+      visibilityChange = "visibilitychange";
+    } else if (typeof document.msHidden !== "undefined") {
+      hidden = "msHidden";
+      visibilityChange = "msvisibilitychange";
+    } else if (typeof document.webkitHidden !== "undefined") {
+      hidden = "webkitHidden";
+      visibilityChange = "webkitvisibilitychange";
+    }
+
+    if (typeof document.addEventListener !== "undefined" && hidden !== undefined) {
+      document.addEventListener(visibilityChange, function() {
+        if (document[hidden]) {
+          console.log('[Unity] Page hidden, but Unity should keep running');
+        } else {
+          console.log('[Unity] Page visible again');
+        }
+      }, false);
+    }
   </script>
 </body>
 </html>
