@@ -23,10 +23,13 @@ export const UnityFrame: React.FC<UnityFrameProps> = ({ webViewRef, onMessage, s
       return () => window.removeEventListener('message', handleMessage);
     }, [onMessage]);
 
+    // Use relative path for GitHub Pages compatibility
+    const unityPath = process.env.PUBLIC_URL ? `${process.env.PUBLIC_URL}/unity/index.html` : '/unity/index.html';
+
     return (
       <iframe
         ref={webViewRef as any}
-        src="/unity/index.html"
+        src={unityPath}
         style={{
           width: '100%',
           height: '100%',
