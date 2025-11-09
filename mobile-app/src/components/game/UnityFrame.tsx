@@ -23,13 +23,18 @@ export const UnityFrame: React.FC<UnityFrameProps> = ({ webViewRef, onMessage, s
       return () => window.removeEventListener('message', handleMessage);
     }, [onMessage]);
 
-    // Use relative path for GitHub Pages compatibility
-    const unityPath = process.env.PUBLIC_URL ? `${process.env.PUBLIC_URL}/unity/index.html` : '/unity/index.html';
+    // Construct Unity path based on current location for GitHub Pages compatibility
+    const getUnityPath = () => {
+      const basePath = window.location.pathname.includes('/cardGameCollection')
+        ? '/cardGameCollection/unity/index.html'
+        : '/unity/index.html';
+      return basePath;
+    };
 
     return (
       <iframe
         ref={webViewRef as any}
-        src={unityPath}
+        src={getUnityPath()}
         style={{
           width: '100%',
           height: '100%',
