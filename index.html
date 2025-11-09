@@ -24,7 +24,21 @@
         flex: 1;
       }
     </style>
-  <link rel="icon" href="favicon.ico" /></head>
+  <link rel="icon" href="favicon.ico" />
+    <script type="text/javascript">
+      // GitHub Pages SPA redirect handler
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
+  </head>
 
   <body>
     <!-- Use static rendering with Expo Router to support running without JavaScript. -->
@@ -33,6 +47,6 @@
     </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
-  <script src="_expo/static/js/web/index-61502d856bbf513d24bfafd5227fe0b9.js" defer></script>
+  <script src="_expo/static/js/web/index-ef97343ed82a424701ceebbaf8c90d7a.js" defer></script>
 </body>
 </html>
