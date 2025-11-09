@@ -1,6 +1,13 @@
 // Game types
 export enum GameType {
   SOLITAIRE = 'solitaire',
+  FREECELL = 'freecell',
+  SPIDER = 'spider',
+  SUDOKU = 'sudoku',
+  CRAZY_EIGHTS = 'crazy_eights',
+  GO_FISH = 'go_fish',
+  GAME_2048 = '2048',
+  MEMORY_MATCH = 'memory_match',
   POKER = 'poker',
   BLACKJACK = 'blackjack',
 }

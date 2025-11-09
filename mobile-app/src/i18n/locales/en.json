@@ -24,13 +24,41 @@
       "name": "Solitaire",
       "description": "Classic card game. Clear all cards to win!"
     },
+    "freecell": {
+      "name": "FreeCell",
+      "description": "Strategic solitaire with 4 free cells. Coming soon!"
+    },
+    "spider": {
+      "name": "Spider Solitaire",
+      "description": "Clear suits in descending order. Coming soon!"
+    },
+    "sudoku": {
+      "name": "Sudoku",
+      "description": "Fill the grid with numbers 1-9. Coming soon!"
+    },
+    "2048": {
+      "name": "2048",
+      "description": "Slide tiles to reach 2048! Coming soon!"
+    },
+    "memory_match": {
+      "name": "Memory Match",
+      "description": "Flip cards to find matching pairs. Coming soon!"
+    },
+    "crazy_eights": {
+      "name": "Crazy Eights",
+      "description": "Match suits or ranks to get rid of cards. Coming soon!"
+    },
+    "go_fish": {
+      "name": "Go Fish",
+      "description": "Collect sets of four cards. Coming soon!"
+    },
     "poker": {
       "name": "Poker",
       "description": "Texas Hold'em poker. Coming soon!"
     },
     "blackjack": {
       "name": "Blackjack",
-      "description": "Beat the dealer. Get 21!"
+      "description": "Beat the dealer. Get 21! Coming soon!"
     },
     "comingSoon": "Coming Soon"
   },

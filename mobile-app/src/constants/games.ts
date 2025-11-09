@@ -8,6 +8,41 @@ export const GAME_METADATA = [
     available: true,
   },
   {
+    id: GameType.FREECELL,
+    icon: '🎴',
+    available: false,
+  },
+  {
+    id: GameType.SPIDER,
+    icon: '🕷️',
+    available: false,
+  },
+  {
+    id: GameType.SUDOKU,
+    icon: '🔢',
+    available: false,
+  },
+  {
+    id: GameType.GAME_2048,
+    icon: '📱',
+    available: false,
+  },
+  {
+    id: GameType.MEMORY_MATCH,
+    icon: '🎯',
+    available: false,
+  },
+  {
+    id: GameType.CRAZY_EIGHTS,
+    icon: '8️⃣',
+    available: false,
+  },
+  {
+    id: GameType.GO_FISH,
+    icon: '🐟',
+    available: false,
+  },
+  {
     id: GameType.POKER,
     icon: '🎰',
     available: false,

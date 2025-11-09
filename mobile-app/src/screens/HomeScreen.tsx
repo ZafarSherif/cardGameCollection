@@ -6,6 +6,7 @@ import {
   ScrollView,
   SafeAreaView,
   StatusBar,
+  Dimensions,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GameCard } from '../components/GameCard';
@@ -32,6 +33,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [selectedGame, setSelectedGame] = useState<'solitaire' | null>(null);
 
+  // Detect landscape mode
+  const { width, height } = Dimensions.get('window');
+  const isLandscape = width > height;
+
   const handleGamePress = (gameType: GameType) => {
     if (gameType === GameType.SOLITAIRE) {
       navigation.navigate('Game', { gameType });
@@ -47,11 +52,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   // Build games list with translations
   const games = GAME_METADATA.map((meta) => {
-    const gameKey = meta.id.toLowerCase() as 'solitaire' | 'poker' | 'blackjack';
+    const gameKey = meta.id.toLowerCase().replace(/-/g, '_') as keyof typeof t.games;
     return {
       id: meta.id,
-      name: t.games[gameKey].name,
-      description: t.games[gameKey].description,
+      name: t.games[gameKey]?.name || meta.id,
+      description: t.games[gameKey]?.description || 'Coming soon!',
       icon: meta.icon,
       available: meta.available,
     };
@@ -67,23 +72,23 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </View>
 
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, isLandscape && styles.headerLandscape]}>
         <View>
-          <Text style={styles.welcomeText}>{t.home.welcomeBack}</Text>
-          <Text style={styles.username}>{player.username}</Text>
+          <Text style={[styles.welcomeText, isLandscape && styles.textCompact]}>{t.home.welcomeBack}</Text>
+          <Text style={[styles.username, isLandscape && styles.textCompact]}>{player.username}</Text>
         </View>
 
         <View style={styles.balanceContainer}>
-          <Text style={styles.balanceLabel}>{t.home.balance}</Text>
-          <View style={styles.balanceAmount}>
-            <Text style={styles.coinIcon}>💰</Text>
-            <Text style={styles.balanceText}>{player.balance}</Text>
+          <Text style={[styles.balanceLabel, isLandscape && styles.textCompact]}>{t.home.balance}</Text>
+          <View style={[styles.balanceAmount, isLandscape && styles.balanceAmountCompact]}>
+            <Text style={[styles.coinIcon, isLandscape && styles.textCompact]}>💰</Text>
+            <Text style={[styles.balanceText, isLandscape && styles.textCompact]}>{player.balance}</Text>
           </View>
         </View>
       </View>
 
       {/* Stats */}
-      <View style={styles.statsContainer}>
+      <View style={[styles.statsContainer, isLandscape && styles.statsContainerLandscape]}>
         <View style={styles.statItem}>
           <Text style={styles.statValue}>{player.level}</Text>
           <Text style={styles.statLabel}>{t.home.level}</Text>
@@ -159,6 +164,12 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
     backgroundColor: COLORS.surface,
   },
+  headerLandscape: {
+    padding: SPACING.sm,
+  },
+  textCompact: {
+    fontSize: FONT_SIZES.xs,
+  },
   welcomeText: {
     fontSize: FONT_SIZES.sm,
     color: COLORS.textSecondary,
@@ -200,6 +211,14 @@ const styles = StyleSheet.create({
     padding: SPACING.md,
     borderRadius: 12,
     justifyContent: 'space-around',
+  },
+  statsContainerLandscape: {
+    margin: SPACING.sm,
+    padding: SPACING.sm,
+  },
+  balanceAmountCompact: {
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
   },
   statItem: {
     flex: 1,
