@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 interface GameActionsProps {
   onNewGame: () => void;
@@ -16,15 +17,16 @@ export const GameActions: React.FC<GameActionsProps> = ({
   orientation,
   showUndo = true,
 }) => {
+  const { t } = useLanguage();
   const isLandscape = orientation === 'landscape';
 
   return (
     <View style={[styles.container, isLandscape && styles.containerLandscape]}>
       <TouchableOpacity style={styles.button} onPress={onNewGame}>
-        <Text style={styles.buttonText}>New Game</Text>
+        <Text style={styles.buttonText}>{t.common.newGame}</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={onRestart}>
-        <Text style={styles.buttonText}>Restart</Text>
+        <Text style={styles.buttonText}>{t.common.restart}</Text>
       </TouchableOpacity>
       {showUndo && (
         <TouchableOpacity style={styles.button} onPress={onUndo}>

@@ -8,7 +8,9 @@
     "save": "Enregistrer",
     "loading": "Chargement...",
     "error": "Erreur",
-    "success": "Succès"
+    "success": "Succès",
+    "newGame": "Nouveau Jeu",
+    "restart": "Recommencer"
   },
   "home": {
     "welcomeBack": "Bon retour,",
@@ -24,6 +26,14 @@
       "name": "Solitaire",
       "description": "Jeu de cartes classique. Enlevez toutes les cartes pour gagner !"
     },
+    "2048": {
+      "name": "2048",
+      "description": "Combinez des tuiles pour atteindre 2048 !"
+    },
+    "memory_match": {
+      "name": "Memory Match",
+      "description": "Trouvez les paires de cartes correspondantes !"
+    },
     "poker": {
       "name": "Poker",
       "description": "Poker Texas Hold'em. Bientôt disponible !"
@@ -33,6 +43,15 @@
       "description": "Battez le croupier. Obtenez 21 !"
     },
     "comingSoon": "Bientôt disponible"
+  },
+  "game2048": {
+    "score": "Score",
+    "best": "Meilleur",
+    "gameOver": "Partie Terminée !",
+    "youWin": "Vous avez gagné !",
+    "tryAgain": "Réessayer",
+    "keepGoing": "Continuer",
+    "instructions": "Glissez pour déplacer les tuiles. Lorsque deux tuiles avec le même numéro se touchent, elles fusionnent en une !"
   },
   "gameScreen": {
     "unityView": "Vue du Jeu Unity",
@@ -89,6 +108,75 @@
           "Libérez d'abord les cartes face cachée",
           "Ne vous précipitez pas - planifiez vos coups",
           "Utilisez le bouton Annuler si vous êtes bloqué"
+        ]
+      }
+    },
+    "game2048": {
+      "title": "Comment Jouer à 2048",
+      "objective": {
+        "title": "Objectif",
+        "text": "Combinez des tuiles avec le même numéro pour atteindre la tuile 2048 !"
+      },
+      "howTo": {
+        "title": "Comment Jouer",
+        "steps": [
+          "Glissez (ou utilisez les touches fléchées) pour déplacer les tuiles dans n'importe quelle direction",
+          "Lorsque deux tuiles avec le même numéro se touchent, elles fusionnent en une",
+          "Après chaque mouvement, une nouvelle tuile (2 ou 4) apparaît sur le plateau",
+          "Continuez à combiner des tuiles pour atteindre des nombres plus élevés"
+        ]
+      },
+      "scoring": {
+        "title": "Score",
+        "points": [
+          "Chaque tuile fusionnée ajoute sa valeur à votre score",
+          "Fusions plus grandes = plus de points",
+          "Essayez de battre votre meilleur score !"
+        ]
+      },
+      "tips": {
+        "title": "Astuces Rapides",
+        "list": [
+          "Gardez votre tuile la plus haute dans un coin",
+          "Construisez des tuiles dans une direction (ex : toujours glisser gauche/bas)",
+          "Ne faites pas de mouvements aléatoires - planifiez à l'avance",
+          "Essayez de garder le plateau organisé"
+        ]
+      }
+    },
+    "memory_match": {
+      "title": "Comment Jouer à Memory Match",
+      "objective": {
+        "title": "Objectif",
+        "text": "Trouvez toutes les paires de cartes assorties pour gagner la partie !"
+      },
+      "howTo": {
+        "title": "Comment Jouer",
+        "steps": [
+          "Cliquez sur n'importe quelle carte pour la retourner face visible",
+          "Cliquez sur une deuxième carte pour essayer de trouver son correspondant",
+          "Si les cartes correspondent, elles restent face visible",
+          "Si elles ne correspondent pas, elles se retournent face cachée",
+          "Mémorisez l'emplacement des cartes",
+          "Trouvez toutes les paires pour gagner !"
+        ]
+      },
+      "scoring": {
+        "title": "Score",
+        "points": [
+          "+100 points pour chaque paire trouvée",
+          "Bonus de temps : finir plus vite = plus de points",
+          "Bonus de mouvements : moins de mouvements = score plus élevé",
+          "Essayez de finir avec le moins de mouvements !"
+        ]
+      },
+      "tips": {
+        "title": "Astuces Rapides",
+        "list": [
+          "Concentrez-vous et mémorisez les emplacements des cartes",
+          "Travaillez systématiquement à travers la grille",
+          "Moins de mouvements signifie un meilleur score",
+          "Prenez votre temps - précision plutôt que vitesse"
         ]
       }
     }

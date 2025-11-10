@@ -8,7 +8,9 @@
     "save": "Save",
     "loading": "Loading...",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "newGame": "New Game",
+    "restart": "Restart"
   },
   "home": {
     "welcomeBack": "Welcome back,",
@@ -61,6 +63,15 @@
       "description": "Beat the dealer. Get 21! Coming soon!"
     },
     "comingSoon": "Coming Soon"
+  },
+  "game2048": {
+    "score": "Score",
+    "best": "Best",
+    "gameOver": "Game Over!",
+    "youWin": "You Win!",
+    "tryAgain": "Try Again",
+    "keepGoing": "Keep Going",
+    "instructions": "Swipe to move tiles. When two tiles with the same number touch, they merge into one!"
   },
   "gameScreen": {
     "unityView": "Unity Game View",

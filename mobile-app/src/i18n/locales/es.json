@@ -8,7 +8,9 @@
     "save": "Guardar",
     "loading": "Cargando...",
     "error": "Error",
-    "success": "Éxito"
+    "success": "Éxito",
+    "newGame": "Nuevo Juego",
+    "restart": "Reiniciar"
   },
   "home": {
     "welcomeBack": "Bienvenido de nuevo,",
@@ -24,6 +26,14 @@
       "name": "Solitario",
       "description": "¡Juego de cartas clásico. Despeja todas las cartas para ganar!"
     },
+    "2048": {
+      "name": "2048",
+      "description": "¡Combina fichas para alcanzar 2048!"
+    },
+    "memory_match": {
+      "name": "Memory Match",
+      "description": "¡Encuentra los pares de cartas coincidentes!"
+    },
     "poker": {
       "name": "Póker",
       "description": "Póker Texas Hold'em. ¡Próximamente!"
@@ -33,6 +43,15 @@
       "description": "Vence al crupier. ¡Consigue 21!"
     },
     "comingSoon": "Próximamente"
+  },
+  "game2048": {
+    "score": "Puntuación",
+    "best": "Mejor",
+    "gameOver": "¡Juego Terminado!",
+    "youWin": "¡Ganaste!",
+    "tryAgain": "Intentar de Nuevo",
+    "keepGoing": "Continuar",
+    "instructions": "Desliza para mover fichas. Cuando se tocan dos fichas con el mismo número, ¡se fusionan en una!"
   },
   "gameScreen": {
     "unityView": "Vista del Juego Unity",
@@ -89,6 +108,75 @@
           "Libera primero las cartas boca abajo",
           "No te apresures - planea tus movimientos",
           "Usa el botón Deshacer si te atascas"
+        ]
+      }
+    },
+    "game2048": {
+      "title": "Cómo Jugar 2048",
+      "objective": {
+        "title": "Objetivo",
+        "text": "¡Combina fichas con el mismo número para alcanzar la ficha 2048!"
+      },
+      "howTo": {
+        "title": "Cómo Jugar",
+        "steps": [
+          "Desliza (o usa las flechas del teclado) para mover fichas en cualquier dirección",
+          "Cuando dos fichas con el mismo número se tocan, se fusionan en una",
+          "Después de cada movimiento, aparece una nueva ficha (2 o 4) en el tablero",
+          "Sigue combinando fichas para alcanzar números más altos"
+        ]
+      },
+      "scoring": {
+        "title": "Puntuación",
+        "points": [
+          "Cada ficha fusionada suma su valor a tu puntuación",
+          "Fusiones más grandes = más puntos",
+          "¡Intenta superar tu mejor puntuación!"
+        ]
+      },
+      "tips": {
+        "title": "Consejos Rápidos",
+        "list": [
+          "Mantén tu ficha más alta en una esquina",
+          "Construye fichas en una dirección (ej: siempre desliza izquierda/abajo)",
+          "No hagas movimientos aleatorios - planifica con anticipación",
+          "Intenta mantener el tablero organizado"
+        ]
+      }
+    },
+    "memory_match": {
+      "title": "Cómo Jugar Memory Match",
+      "objective": {
+        "title": "Objetivo",
+        "text": "¡Encuentra todos los pares de cartas para ganar el juego!"
+      },
+      "howTo": {
+        "title": "Cómo Jugar",
+        "steps": [
+          "Haz clic en cualquier carta para voltearla boca arriba",
+          "Haz clic en una segunda carta para intentar encontrar su pareja",
+          "Si las cartas coinciden, permanecen boca arriba",
+          "Si no coinciden, se voltean boca abajo",
+          "Recuerda dónde están las cartas",
+          "¡Encuentra todos los pares para ganar!"
+        ]
+      },
+      "scoring": {
+        "title": "Puntuación",
+        "points": [
+          "+100 puntos por cada par encontrado",
+          "Bonus de tiempo: completar más rápido = más puntos",
+          "Bonus de movimientos: menos movimientos = mayor puntuación",
+          "¡Intenta completar con el menor número de movimientos!"
+        ]
+      },
+      "tips": {
+        "title": "Consejos Rápidos",
+        "list": [
+          "Concéntrate y recuerda las ubicaciones de las cartas",
+          "Trabaja sistemáticamente a través de la cuadrícula",
+          "Menos movimientos significa mejor puntuación",
+          "Tómate tu tiempo - precisión sobre velocidad"
         ]
       }
     }

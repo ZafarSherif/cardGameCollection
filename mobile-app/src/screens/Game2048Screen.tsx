@@ -150,21 +150,21 @@ export const Game2048Screen: React.FC<Game2048ScreenProps> = ({ navigation }) =>
       {/* Score */}
       <View style={styles.scoreContainer}>
         <View style={styles.scoreBox}>
-          <Text style={styles.scoreLabel}>SCORE</Text>
+          <Text style={styles.scoreLabel}>{t.game2048.score.toUpperCase()}</Text>
           <Text style={styles.scoreValue}>{gameState.score}</Text>
         </View>
         <View style={styles.scoreBox}>
-          <Text style={styles.scoreLabel}>BEST</Text>
+          <Text style={styles.scoreLabel}>{t.game2048.best.toUpperCase()}</Text>
           <Text style={styles.scoreValue}>{gameState.bestScore}</Text>
         </View>
         <TouchableOpacity style={styles.newGameButton} onPress={handleNewGame}>
-          <Text style={styles.newGameText}>New Game</Text>
+          <Text style={styles.newGameText}>{t.common.newGame}</Text>
         </TouchableOpacity>
       </View>
 
       {/* Instructions */}
       <Text style={styles.instructions}>
-        Join the numbers and get to the 2048 tile!
+        {t.game2048.instructions}
       </Text>
 
       {/* Game Board */}
@@ -224,11 +224,11 @@ export const Game2048Screen: React.FC<Game2048ScreenProps> = ({ navigation }) =>
         <View style={styles.overlay}>
           <View style={styles.overlayContent}>
             <Text style={styles.overlayTitle}>
-              {gameState.won ? '🎉 You Win!' : 'Game Over!'}
+              {gameState.won ? `🎉 ${t.game2048.youWin}` : t.game2048.gameOver}
             </Text>
-            <Text style={styles.overlayScore}>Score: {gameState.score}</Text>
+            <Text style={styles.overlayScore}>{t.game2048.score}: {gameState.score}</Text>
             <TouchableOpacity style={styles.tryAgainButton} onPress={handleNewGame}>
-              <Text style={styles.tryAgainText}>Try Again</Text>
+              <Text style={styles.tryAgainText}>{t.game2048.tryAgain}</Text>
             </TouchableOpacity>
           </View>
         </View>
