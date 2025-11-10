@@ -238,7 +238,7 @@ export const Game2048Screen: React.FC<Game2048ScreenProps> = ({ navigation }) =>
       <HowToPlayModal
         visible={showHowToPlay}
         onClose={() => setShowHowToPlay(false)}
-        gameType="2048"
+        gameType="game2048"
       />
     </SafeAreaView>
   );

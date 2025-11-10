@@ -120,7 +120,7 @@
         ]
       }
     },
-    "2048": {
+    "game2048": {
       "title": "How to Play 2048",
       "objective": {
         "title": "Goal",

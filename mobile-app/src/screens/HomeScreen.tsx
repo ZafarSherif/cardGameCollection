@@ -31,7 +31,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const player = usePlayerStore((state) => state.player);
   const { t } = useLanguage();
   const [showHowToPlay, setShowHowToPlay] = useState(false);
-  const [selectedGame, setSelectedGame] = useState<'solitaire' | '2048' | null>(null);
+  const [selectedGame, setSelectedGame] = useState<'solitaire' | 'game2048' | null>(null);
 
   // Detect landscape mode
   const { width, height } = Dimensions.get('window');
@@ -50,7 +50,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       setSelectedGame('solitaire');
       setShowHowToPlay(true);
     } else if (gameType === GameType.GAME_2048) {
-      setSelectedGame('2048');
+      setSelectedGame('game2048');
       setShowHowToPlay(true);
     }
   };
