@@ -25,7 +25,7 @@ export const GAME_METADATA = [
   {
     id: GameType.GAME_2048,
     icon: '📱',
-    available: false,
+    available: true,
   },
   {
     id: GameType.MEMORY_MATCH,

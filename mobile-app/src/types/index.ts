@@ -67,6 +67,7 @@ export interface GameCompleteData {
 export type RootStackParamList = {
   Home: undefined;
   Game: { gameType: GameType };
+  Game2048: undefined;
   Profile: undefined;
   Settings: undefined;
   Leaderboard: undefined;

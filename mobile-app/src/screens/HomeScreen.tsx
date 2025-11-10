@@ -40,6 +40,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const handleGamePress = (gameType: GameType) => {
     if (gameType === GameType.SOLITAIRE) {
       navigation.navigate('Game', { gameType });
+    } else if (gameType === GameType.GAME_2048) {
+      navigation.navigate('Game2048');
     }
   };
 

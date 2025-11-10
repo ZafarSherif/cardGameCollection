@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Platform } from 'react-native';
 import { HomeScreen } from '../screens/HomeScreen';
 import { GameScreen } from '../screens/GameScreen';
+import { Game2048Screen } from '../screens/Game2048Screen';
 import { RootStackParamList } from '../types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -44,6 +45,13 @@ export const RootNavigator: React.FC = () => {
         <Stack.Screen
           name="Game"
           component={GameScreen}
+          options={{
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen
+          name="Game2048"
+          component={Game2048Screen}
           options={{
             animation: 'fade',
           }}
