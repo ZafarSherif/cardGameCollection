@@ -117,7 +117,12 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
 
       {/* Game Stats Header - Top in portrait, Left in landscape */}
       {!isLandscape && (
-        <GameHeader score={gameState.score} moves={gameState.moves} time={gameState.time} />
+        <GameHeader
+          score={gameState.score}
+          moves={gameState.moves}
+          time={gameState.time}
+          matches={gameState.matches}
+        />
       )}
 
       <View style={[styles.gameRow, isLandscape && styles.gameRowLandscape]}>
@@ -136,6 +141,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
               score={gameState.score}
               moves={gameState.moves}
               time={gameState.time}
+              matches={gameState.matches}
               orientation={orientation}
             />
           </View>
@@ -146,6 +152,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
           <UnityFrame
             webViewRef={webViewRef}
             onMessage={handleUnityMessage}
+            gameType={gameType}
             style={styles.webview}
           />
         </View>
@@ -158,6 +165,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
               onRestart={restart}
               onUndo={undo}
               orientation={orientation}
+              showUndo={gameType === 'solitaire'}
             />
           </View>
         )}
@@ -170,6 +178,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
           onRestart={restart}
           onUndo={undo}
           orientation={orientation}
+          showUndo={gameType === 'solitaire'}
         />
       )}
 
@@ -188,7 +197,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
       <HowToPlayModal
         visible={showHowToPlay}
         onClose={() => setShowHowToPlay(false)}
-        gameType="solitaire"
+        gameType={gameType === 'solitaire' ? 'solitaire' : gameType === 'memory_match' ? 'memory_match' : 'solitaire'}
       />
     </SafeAreaView>
   );

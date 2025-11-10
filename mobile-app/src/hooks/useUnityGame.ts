@@ -5,6 +5,7 @@ interface GameState {
   score: number;
   moves: number;
   time: string;
+  matches: number;
 }
 
 interface GameEndData {
@@ -24,6 +25,7 @@ export const useUnityGame = () => {
     score: 0,
     moves: 0,
     time: '00:00',
+    matches: 0,
   });
   const [gameEndData, setGameEndData] = useState<GameEndData | null>(null);
   const [isReady, setIsReady] = useState(false);

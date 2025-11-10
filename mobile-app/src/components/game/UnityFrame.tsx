@@ -1,14 +1,29 @@
 import React from 'react';
 import { Platform, View, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
+import { GameType } from '../../types';
 
 interface UnityFrameProps {
   webViewRef: React.RefObject<any>;
   onMessage: (event: any) => void;
+  gameType: GameType;
   style?: any;
 }
 
-export const UnityFrame: React.FC<UnityFrameProps> = ({ webViewRef, onMessage, style }) => {
+export const UnityFrame: React.FC<UnityFrameProps> = ({ webViewRef, onMessage, gameType, style }) => {
+  // Map game type to Unity folder name
+  const getUnityFolderName = (type: GameType): string => {
+    switch (type) {
+      case GameType.SOLITAIRE:
+        return 'Solitaire';
+      case GameType.MEMORY_MATCH:
+        return 'MemoryMatch';
+      default:
+        console.warn('[UnityFrame] Unknown game type:', type);
+        return 'Solitaire';
+    }
+  };
+
   if (Platform.OS === 'web') {
     // For web platform, use iframe
     React.useEffect(() => {
@@ -23,13 +38,15 @@ export const UnityFrame: React.FC<UnityFrameProps> = ({ webViewRef, onMessage, s
       return () => window.removeEventListener('message', handleMessage);
     }, [onMessage]);
 
-    // Construct Unity path based on current location for GitHub Pages compatibility
+    // Construct Unity path based on game type and current location for GitHub Pages compatibility
     const getUnityPath = () => {
+      const folderName = getUnityFolderName(gameType);
       const basePath = window.location.pathname.includes('/cardGameCollection')
-        ? '/cardGameCollection/unity/index.html'
-        : '/unity/index.html';
+        ? `/cardGameCollection/unity/${folderName}/index.html`
+        : `/unity/${folderName}/index.html`;
       console.log('[UnityFrame] Using Unity path:', basePath);
-      console.log('[UnityFrame] Current location:', window.location.href);
+      console.log('[UnityFrame] Game type:', gameType);
+      console.log('[UnityFrame] Folder name:', folderName);
       return basePath;
     };
 
@@ -51,10 +68,13 @@ export const UnityFrame: React.FC<UnityFrameProps> = ({ webViewRef, onMessage, s
   }
 
   // For native platforms (iOS/Android), use WebView
+  const folderName = getUnityFolderName(gameType);
+  const nativeUri = `http://localhost:8081/unity/${folderName}/index.html`;
+
   return (
     <WebView
       ref={webViewRef}
-      source={{ uri: 'http://localhost:8081/unity/index.html' }}
+      source={{ uri: nativeUri }}
       style={style}
       onMessage={onMessage}
       javaScriptEnabled
@@ -66,7 +86,7 @@ export const UnityFrame: React.FC<UnityFrameProps> = ({ webViewRef, onMessage, s
         console.error('WebView error:', nativeEvent);
       }}
       onLoadEnd={() => {
-        console.log('WebView loaded');
+        console.log('WebView loaded:', nativeUri);
       }}
     />
   );

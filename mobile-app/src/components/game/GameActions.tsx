@@ -6,6 +6,7 @@ interface GameActionsProps {
   onRestart: () => void;
   onUndo: () => void;
   orientation: 'portrait' | 'landscape';
+  showUndo?: boolean;
 }
 
 export const GameActions: React.FC<GameActionsProps> = ({
@@ -13,6 +14,7 @@ export const GameActions: React.FC<GameActionsProps> = ({
   onRestart,
   onUndo,
   orientation,
+  showUndo = true,
 }) => {
   const isLandscape = orientation === 'landscape';
 
@@ -24,9 +26,11 @@ export const GameActions: React.FC<GameActionsProps> = ({
       <TouchableOpacity style={styles.button} onPress={onRestart}>
         <Text style={styles.buttonText}>Restart</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={onUndo}>
-        <Text style={styles.buttonText}>Undo</Text>
-      </TouchableOpacity>
+      {showUndo && (
+        <TouchableOpacity style={styles.button} onPress={onUndo}>
+          <Text style={styles.buttonText}>Undo</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

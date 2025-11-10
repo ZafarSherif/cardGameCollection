@@ -152,6 +152,42 @@
           "Try to keep the board organized"
         ]
       }
+    },
+    "memory_match": {
+      "title": "How to Play Memory Match",
+      "objective": {
+        "title": "Goal",
+        "text": "Find all matching pairs of cards to win the game!"
+      },
+      "howTo": {
+        "title": "How to Play",
+        "steps": [
+          "Click any card to flip it face up",
+          "Click a second card to try to find its match",
+          "If the cards match, they stay face up",
+          "If they don't match, they flip back face down",
+          "Remember where cards are located",
+          "Match all pairs to win!"
+        ]
+      },
+      "scoring": {
+        "title": "Scoring",
+        "points": [
+          "+100 points for each matched pair",
+          "Time bonus: faster completion = more points",
+          "Move bonus: fewer moves = higher score",
+          "Try to complete in fewest moves!"
+        ]
+      },
+      "tips": {
+        "title": "Quick Tips",
+        "list": [
+          "Focus and remember card locations",
+          "Work systematically across the grid",
+          "Fewer moves means a better score",
+          "Take your time - accuracy over speed"
+        ]
+      }
     }
   }
 }

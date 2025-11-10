@@ -5,6 +5,7 @@ interface GameHeaderProps {
   score: number;
   moves: number;
   time: string;
+  matches?: number;
   orientation?: 'portrait' | 'landscape';
 }
 
@@ -12,6 +13,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
   score,
   moves,
   time,
+  matches,
   orientation = 'portrait'
 }) => {
   const isLandscape = orientation === 'landscape';
@@ -26,6 +28,12 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
         <Text style={styles.label}>Moves</Text>
         <Text style={styles.value}>{moves}</Text>
       </View>
+      {matches !== undefined && (
+        <View style={styles.stat}>
+          <Text style={styles.label}>Matches</Text>
+          <Text style={styles.value}>{matches}</Text>
+        </View>
+      )}
       <View style={styles.stat}>
         <Text style={styles.label}>Time</Text>
         <Text style={styles.value}>{time}</Text>

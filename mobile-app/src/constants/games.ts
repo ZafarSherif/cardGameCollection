@@ -30,7 +30,7 @@ export const GAME_METADATA = [
   {
     id: GameType.MEMORY_MATCH,
     icon: '🎯',
-    available: false,
+    available: true,
   },
   {
     id: GameType.CRAZY_EIGHTS,

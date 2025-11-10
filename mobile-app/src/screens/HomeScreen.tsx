@@ -31,7 +31,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const player = usePlayerStore((state) => state.player);
   const { t } = useLanguage();
   const [showHowToPlay, setShowHowToPlay] = useState(false);
-  const [selectedGame, setSelectedGame] = useState<'solitaire' | 'game2048' | null>(null);
+  const [selectedGame, setSelectedGame] = useState<'solitaire' | 'game2048' | 'memory_match' | null>(null);
 
   // Detect landscape mode
   const { width, height } = Dimensions.get('window');
@@ -42,6 +42,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       navigation.navigate('Game', { gameType });
     } else if (gameType === GameType.GAME_2048) {
       navigation.navigate('Game2048');
+    } else if (gameType === GameType.MEMORY_MATCH) {
+      navigation.navigate('Game', { gameType: GameType.MEMORY_MATCH });
     }
   };
 
@@ -51,6 +53,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       setShowHowToPlay(true);
     } else if (gameType === GameType.GAME_2048) {
       setSelectedGame('game2048');
+      setShowHowToPlay(true);
+    } else if (gameType === GameType.MEMORY_MATCH) {
+      setSelectedGame('memory_match');
       setShowHowToPlay(true);
     }
   };
@@ -133,7 +138,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             game={game}
             onPress={() => handleGamePress(game.id)}
             onHowToPlay={
-              (game.id === GameType.SOLITAIRE || game.id === GameType.GAME_2048)
+              (game.id === GameType.SOLITAIRE || game.id === GameType.GAME_2048 || game.id === GameType.MEMORY_MATCH)
                 ? () => handleHowToPlay(game.id)
                 : undefined
             }
