@@ -254,7 +254,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: SPACING.lg,
-    marginBottom: SPACING.md,
+    marginTop: SPACING.md,
+    marginBottom: SPACING.lg,
   },
   scoreBox: {
     backgroundColor: '#bbada0',
@@ -291,7 +292,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     color: '#776e65',
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.xl,
     paddingHorizontal: SPACING.lg,
   },
   board: {
