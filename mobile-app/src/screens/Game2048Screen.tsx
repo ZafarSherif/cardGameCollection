@@ -15,6 +15,8 @@ import { RootStackParamList } from '../types';
 import { COLORS, SPACING, FONT_SIZES } from '../constants/theme';
 import { useLanguage } from '../i18n/LanguageContext';
 import { usePlayerStore } from '../store/playerStore';
+import { CommonGameHeader } from '../components/game/CommonGameHeader';
+import { HowToPlayModal } from '../components/HowToPlayModal';
 import {
   initializeGame,
   move,
@@ -41,6 +43,7 @@ export const Game2048Screen: React.FC<Game2048ScreenProps> = ({ navigation }) =>
   const { addGameResult, updateBalance } = usePlayerStore();
   const [gameState, setGameState] = useState<GameState>(initializeGame());
   const [animating, setAnimating] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   const handleBack = () => {
     navigation.goBack();
@@ -59,6 +62,38 @@ export const Game2048Screen: React.FC<Game2048ScreenProps> = ({ navigation }) =>
 
     setTimeout(() => setAnimating(false), 200);
   };
+
+  // Arrow key support for desktop
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (animating || gameState.gameOver) return;
+
+      switch (event.key) {
+        case 'ArrowUp':
+          event.preventDefault();
+          handleMove('up');
+          break;
+        case 'ArrowDown':
+          event.preventDefault();
+          handleMove('down');
+          break;
+        case 'ArrowLeft':
+          event.preventDefault();
+          handleMove('left');
+          break;
+        case 'ArrowRight':
+          event.preventDefault();
+          handleMove('right');
+          break;
+      }
+    };
+
+    // Only add listener on web
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [animating, gameState.gameOver]);
 
   // Gesture handling
   const gesture = Gesture.Pan()
@@ -106,12 +141,11 @@ export const Game2048Screen: React.FC<Game2048ScreenProps> = ({ navigation }) =>
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Text style={styles.backButtonText}>← {t.common.back}</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>2048</Text>
-      </View>
+      <CommonGameHeader
+        title="2048"
+        onBack={handleBack}
+        onHowToPlay={() => setShowHowToPlay(true)}
+      />
 
       {/* Score */}
       <View style={styles.scoreContainer}>
@@ -199,6 +233,13 @@ export const Game2048Screen: React.FC<Game2048ScreenProps> = ({ navigation }) =>
           </View>
         </View>
       )}
+
+      {/* How to Play Modal */}
+      <HowToPlayModal
+        visible={showHowToPlay}
+        onClose={() => setShowHowToPlay(false)}
+        gameType="2048"
+      />
     </SafeAreaView>
   );
 };
@@ -207,29 +248,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#faf8ef',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: SPACING.md,
-    backgroundColor: '#faf8ef',
-  },
-  backButton: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-  },
-  backButtonText: {
-    fontSize: FONT_SIZES.md,
-    color: '#776e65',
-    fontWeight: '600',
-  },
-  title: {
-    flex: 1,
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#776e65',
-    textAlign: 'center',
-    marginRight: 80,
   },
   scoreContainer: {
     flexDirection: 'row',

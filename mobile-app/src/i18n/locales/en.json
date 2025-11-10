@@ -119,6 +119,39 @@
           "Use Undo button if stuck"
         ]
       }
+    },
+    "2048": {
+      "title": "How to Play 2048",
+      "objective": {
+        "title": "Goal",
+        "text": "Combine tiles with the same number to reach the 2048 tile!"
+      },
+      "howTo": {
+        "title": "How to Play",
+        "steps": [
+          "Swipe (or use arrow keys) to move tiles in any direction",
+          "When two tiles with the same number touch, they merge into one",
+          "After each move, a new tile (2 or 4) appears on the board",
+          "Keep combining tiles to reach higher numbers"
+        ]
+      },
+      "scoring": {
+        "title": "Scoring",
+        "points": [
+          "Each merged tile adds its value to your score",
+          "Bigger merges = more points",
+          "Try to beat your best score!"
+        ]
+      },
+      "tips": {
+        "title": "Quick Tips",
+        "list": [
+          "Keep your highest tile in a corner",
+          "Build tiles in one direction (e.g., always swipe left/down)",
+          "Don't make random moves - plan ahead",
+          "Try to keep the board organized"
+        ]
+      }
     }
   }
 }

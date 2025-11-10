@@ -15,10 +15,12 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { usePlayerStore } from '../store/playerStore';
 import { analytics } from '../services/analytics';
 import { useUnityGame } from '../hooks/useUnityGame';
+import { CommonGameHeader } from '../components/game/CommonGameHeader';
 import { GameHeader } from '../components/game/GameHeader';
 import { GameActions } from '../components/game/GameActions';
 import { WinModal } from '../components/game/WinModal';
 import { UnityFrame } from '../components/game/UnityFrame';
+import { HowToPlayModal } from '../components/HowToPlayModal';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -38,6 +40,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
   const { addGameResult, updateBalance } = usePlayerStore();
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
   const [gameStartTime] = useState(Date.now());
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   // Use Unity game hook
   const { webViewRef, gameState, gameEndData, handleUnityMessage, newGame, restart, undo } =
@@ -105,12 +108,11 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
     <SafeAreaView style={styles.container}>
       {/* Header with back button - only in portrait */}
       {!isLandscape && (
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <Text style={styles.backButtonText}>← {t.common.back}</Text>
-          </TouchableOpacity>
-          <Text style={styles.title}>{gameType.toUpperCase()}</Text>
-        </View>
+        <CommonGameHeader
+          title={gameType.toUpperCase()}
+          onBack={handleBack}
+          onHowToPlay={() => setShowHowToPlay(true)}
+        />
       )}
 
       {/* Game Stats Header - Top in portrait, Left in landscape */}
@@ -122,9 +124,14 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
         {/* Left panel in landscape */}
         {isLandscape && (
           <View style={styles.sidePanel}>
-            <TouchableOpacity style={styles.backButtonLandscape} onPress={handleBack}>
-              <Text style={styles.backButtonText}>← {t.common.back}</Text>
-            </TouchableOpacity>
+            <View style={styles.landscapeHeaderContainer}>
+              <TouchableOpacity style={styles.backButtonLandscape} onPress={handleBack}>
+                <Text style={styles.backButtonText}>←</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.helpButtonLandscape} onPress={() => setShowHowToPlay(true)}>
+                <Text style={styles.helpButtonText}>?</Text>
+              </TouchableOpacity>
+            </View>
             <GameHeader
               score={gameState.score}
               moves={gameState.moves}
@@ -176,6 +183,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
           onClose={() => navigation.goBack()}
         />
       )}
+
+      {/* How to Play Modal */}
+      <HowToPlayModal
+        visible={showHowToPlay}
+        onClose={() => setShowHowToPlay(false)}
+        gameType="solitaire"
+      />
     </SafeAreaView>
   );
 };
@@ -185,35 +199,39 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1a1a1a',
   },
-  header: {
+  landscapeHeaderContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    padding: SPACING.sm,
-    backgroundColor: COLORS.surface,
-  },
-  backButton: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    justifyContent: 'space-around',
+    marginHorizontal: SPACING.sm,
+    marginBottom: SPACING.md,
   },
   backButtonLandscape: {
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
-    marginHorizontal: SPACING.sm,
-    marginBottom: SPACING.md,
     backgroundColor: COLORS.surface,
     borderRadius: 8,
+    flex: 1,
+    marginRight: SPACING.xs,
+    alignItems: 'center',
+  },
+  helpButtonLandscape: {
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+    flex: 1,
+    marginLeft: SPACING.xs,
+    alignItems: 'center',
   },
   backButtonText: {
     fontSize: FONT_SIZES.md,
     color: COLORS.primary,
     fontWeight: '600',
   },
-  title: {
-    flex: 1,
-    fontSize: FONT_SIZES.lg,
-    fontWeight: 'bold',
-    color: COLORS.text,
-    textAlign: 'center',
+  helpButtonText: {
+    fontSize: FONT_SIZES.md,
+    color: '#fff',
+    fontWeight: '600',
   },
   gameRow: {
     flex: 1,

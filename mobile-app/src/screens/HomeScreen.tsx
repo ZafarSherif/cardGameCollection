@@ -31,7 +31,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const player = usePlayerStore((state) => state.player);
   const { t } = useLanguage();
   const [showHowToPlay, setShowHowToPlay] = useState(false);
-  const [selectedGame, setSelectedGame] = useState<'solitaire' | null>(null);
+  const [selectedGame, setSelectedGame] = useState<'solitaire' | '2048' | null>(null);
 
   // Detect landscape mode
   const { width, height } = Dimensions.get('window');
@@ -49,10 +49,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     if (gameType === GameType.SOLITAIRE) {
       setSelectedGame('solitaire');
       setShowHowToPlay(true);
+    } else if (gameType === GameType.GAME_2048) {
+      setSelectedGame('2048');
+      setShowHowToPlay(true);
     }
   };
 
-  // Build games list with translations
+  // Build games list with translations and sort (available first)
   const games = GAME_METADATA.map((meta) => {
     const gameKey = meta.id.toLowerCase().replace(/-/g, '_') as keyof typeof t.games;
     return {
@@ -62,6 +65,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       icon: meta.icon,
       available: meta.available,
     };
+  }).sort((a, b) => {
+    // Available games first
+    if (a.available && !b.available) return -1;
+    if (!a.available && b.available) return 1;
+    return 0;
   });
 
   return (
@@ -125,7 +133,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             game={game}
             onPress={() => handleGamePress(game.id)}
             onHowToPlay={
-              game.id === GameType.SOLITAIRE
+              (game.id === GameType.SOLITAIRE || game.id === GameType.GAME_2048)
                 ? () => handleHowToPlay(game.id)
                 : undefined
             }
