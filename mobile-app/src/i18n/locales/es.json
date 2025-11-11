@@ -34,6 +34,10 @@
       "name": "Memory Match",
       "description": "¡Encuentra los pares de cartas coincidentes!"
     },
+    "sliding_puzzle": {
+      "name": "Rompecabezas Deslizante",
+      "description": "¡Desliza las fichas para completar la imagen!"
+    },
     "poker": {
       "name": "Póker",
       "description": "Póker Texas Hold'em. ¡Próximamente!"
@@ -177,6 +181,41 @@
           "Trabaja sistemáticamente a través de la cuadrícula",
           "Menos movimientos significa mejor puntuación",
           "Tómate tu tiempo - precisión sobre velocidad"
+        ]
+      }
+    },
+    "sliding_puzzle": {
+      "title": "Cómo Jugar Rompecabezas Deslizante",
+      "objective": {
+        "title": "Objetivo",
+        "text": "¡Reorganiza las fichas desordenadas para recrear la imagen original!"
+      },
+      "howTo": {
+        "title": "Cómo Jugar",
+        "steps": [
+          "Toca cualquier ficha adyacente al espacio vacío para moverla",
+          "Usa la imagen de referencia en la parte superior para guiarte",
+          "Elige dificultad: Fácil (6 fichas), Medio (9 fichas), o Difícil (16 fichas)",
+          "Cambia la imagen del rompecabezas en cualquier momento con 'Cambiar Imagen'",
+          "¡Completa la imagen para ganar!"
+        ]
+      },
+      "scoring": {
+        "title": "Puntuación",
+        "points": [
+          "Puntuación base de 1000 puntos",
+          "-10 puntos por cada movimiento",
+          "Completa con menos movimientos para una puntuación más alta",
+          "¡Supera tu mejor tiempo!"
+        ]
+      },
+      "tips": {
+        "title": "Consejos Rápidos",
+        "list": [
+          "Comienza con el modo Fácil para aprender la mecánica",
+          "Trabaja en una fila o columna a la vez",
+          "Planifica varios movimientos por adelantado",
+          "A veces necesitas 'deshacer' el progreso para resolverlo"
         ]
       }
     }

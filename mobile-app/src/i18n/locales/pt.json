@@ -34,6 +34,10 @@
       "name": "Memory Match",
       "description": "Encontre os pares de cartas correspondentes!"
     },
+    "sliding_puzzle": {
+      "name": "Quebra-Cabeça Deslizante",
+      "description": "Deslize as peças para completar a imagem!"
+    },
     "poker": {
       "name": "Pôquer",
       "description": "Pôquer Texas Hold'em. Em breve!"
@@ -177,6 +181,41 @@
           "Trabalhe sistematicamente pela grade",
           "Menos movimentos significa melhor pontuação",
           "Tome seu tempo - precisão sobre velocidade"
+        ]
+      }
+    },
+    "sliding_puzzle": {
+      "title": "Como Jogar Quebra-Cabeça Deslizante",
+      "objective": {
+        "title": "Objetivo",
+        "text": "Reorganize as peças embaralhadas para recriar a imagem original!"
+      },
+      "howTo": {
+        "title": "Como Jogar",
+        "steps": [
+          "Toque em qualquer peça adjacente ao espaço vazio para movê-la",
+          "Use a imagem de referência no topo para guiá-lo",
+          "Escolha a dificuldade: Fácil (6 peças), Médio (9 peças), ou Difícil (16 peças)",
+          "Mude a imagem do quebra-cabeça a qualquer momento com 'Mudar Imagem'",
+          "Complete a imagem para ganhar!"
+        ]
+      },
+      "scoring": {
+        "title": "Pontuação",
+        "points": [
+          "Pontuação base de 1000 pontos",
+          "-10 pontos por cada movimento",
+          "Complete com menos movimentos para uma pontuação maior",
+          "Bata seu melhor tempo!"
+        ]
+      },
+      "tips": {
+        "title": "Dicas Rápidas",
+        "list": [
+          "Comece com o modo Fácil para aprender a mecânica",
+          "Trabalhe em uma linha ou coluna por vez",
+          "Planeje vários movimentos com antecedência",
+          "Às vezes você precisa 'desfazer' o progresso para resolver"
         ]
       }
     }

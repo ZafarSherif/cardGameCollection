@@ -46,6 +46,10 @@
       "name": "Memory Match",
       "description": "Flip cards to find matching pairs. Coming soon!"
     },
+    "sliding_puzzle": {
+      "name": "Sliding Puzzle",
+      "description": "Slide tiles to complete the picture!"
+    },
     "crazy_eights": {
       "name": "Crazy Eights",
       "description": "Match suits or ranks to get rid of cards. Coming soon!"
@@ -197,6 +201,41 @@
           "Work systematically across the grid",
           "Fewer moves means a better score",
           "Take your time - accuracy over speed"
+        ]
+      }
+    },
+    "sliding_puzzle": {
+      "title": "How to Play Sliding Puzzle",
+      "objective": {
+        "title": "Goal",
+        "text": "Rearrange the scrambled tiles to recreate the original picture!"
+      },
+      "howTo": {
+        "title": "How to Play",
+        "steps": [
+          "Tap any tile adjacent to the empty space to move it",
+          "Use the reference image at the top to guide you",
+          "Choose difficulty: Easy (6 tiles), Medium (9 tiles), or Hard (16 tiles)",
+          "Change the puzzle image anytime with 'Change Image'",
+          "Complete the picture to win!"
+        ]
+      },
+      "scoring": {
+        "title": "Scoring",
+        "points": [
+          "Base score of 1000 points",
+          "-10 points for each move",
+          "Complete in fewer moves for a higher score",
+          "Beat your best time!"
+        ]
+      },
+      "tips": {
+        "title": "Quick Tips",
+        "list": [
+          "Start with Easy mode to learn the mechanics",
+          "Work on one row or column at a time",
+          "Plan multiple moves ahead",
+          "Sometimes you need to 'undo' progress to solve it"
         ]
       }
     }

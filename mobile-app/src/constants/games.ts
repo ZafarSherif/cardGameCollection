@@ -33,6 +33,11 @@ export const GAME_METADATA = [
     available: true,
   },
   {
+    id: GameType.SLIDING_PUZZLE,
+    icon: '🧩',
+    available: true,
+  },
+  {
     id: GameType.CRAZY_EIGHTS,
     icon: '8️⃣',
     available: false,

@@ -34,6 +34,10 @@
       "name": "Memory Match",
       "description": "Trouvez les paires de cartes correspondantes !"
     },
+    "sliding_puzzle": {
+      "name": "Puzzle Coulissant",
+      "description": "Faites glisser les tuiles pour compléter l'image !"
+    },
     "poker": {
       "name": "Poker",
       "description": "Poker Texas Hold'em. Bientôt disponible !"
@@ -177,6 +181,41 @@
           "Travaillez systématiquement à travers la grille",
           "Moins de mouvements signifie un meilleur score",
           "Prenez votre temps - précision plutôt que vitesse"
+        ]
+      }
+    },
+    "sliding_puzzle": {
+      "title": "Comment Jouer au Puzzle Coulissant",
+      "objective": {
+        "title": "Objectif",
+        "text": "Réorganisez les tuiles mélangées pour recréer l'image originale !"
+      },
+      "howTo": {
+        "title": "Comment Jouer",
+        "steps": [
+          "Appuyez sur n'importe quelle tuile adjacente à l'espace vide pour la déplacer",
+          "Utilisez l'image de référence en haut pour vous guider",
+          "Choisissez la difficulté : Facile (6 tuiles), Moyen (9 tuiles), ou Difficile (16 tuiles)",
+          "Changez l'image du puzzle à tout moment avec 'Changer d'Image'",
+          "Complétez l'image pour gagner !"
+        ]
+      },
+      "scoring": {
+        "title": "Score",
+        "points": [
+          "Score de base de 1000 points",
+          "-10 points par mouvement",
+          "Terminez avec moins de mouvements pour un score plus élevé",
+          "Battez votre meilleur temps !"
+        ]
+      },
+      "tips": {
+        "title": "Astuces Rapides",
+        "list": [
+          "Commencez avec le mode Facile pour apprendre les mécanismes",
+          "Travaillez sur une rangée ou une colonne à la fois",
+          "Planifiez plusieurs mouvements à l'avance",
+          "Parfois, vous devez 'défaire' vos progrès pour résoudre"
         ]
       }
     }

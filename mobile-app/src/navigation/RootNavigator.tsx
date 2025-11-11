@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import { HomeScreen } from '../screens/HomeScreen';
 import { GameScreen } from '../screens/GameScreen';
 import { Game2048Screen } from '../screens/Game2048Screen';
+import { SlidingPuzzleScreen } from '../screens/SlidingPuzzleScreen';
 import { RootStackParamList } from '../types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -52,6 +53,13 @@ export const RootNavigator: React.FC = () => {
         <Stack.Screen
           name="Game2048"
           component={Game2048Screen}
+          options={{
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen
+          name="SlidingPuzzle"
+          component={SlidingPuzzleScreen}
           options={{
             animation: 'fade',
           }}

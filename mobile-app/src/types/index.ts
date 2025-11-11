@@ -8,6 +8,7 @@ export enum GameType {
   GO_FISH = 'go_fish',
   GAME_2048 = '2048',
   MEMORY_MATCH = 'memory_match',
+  SLIDING_PUZZLE = 'sliding_puzzle',
   POKER = 'poker',
   BLACKJACK = 'blackjack',
 }
@@ -68,6 +69,7 @@ export type RootStackParamList = {
   Home: undefined;
   Game: { gameType: GameType };
   Game2048: undefined;
+  SlidingPuzzle: undefined;
   Profile: undefined;
   Settings: undefined;
   Leaderboard: undefined;

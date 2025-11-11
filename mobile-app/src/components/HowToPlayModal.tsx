@@ -13,7 +13,7 @@ import { useLanguage } from '../i18n/LanguageContext';
 interface HowToPlayModalProps {
   visible: boolean;
   onClose: () => void;
-  gameType: 'solitaire' | 'game2048' | 'memory_match';
+  gameType: 'solitaire' | 'game2048' | 'memory_match' | 'sliding_puzzle';
 }
 
 export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({
