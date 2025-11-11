@@ -68,6 +68,36 @@ if (fs.existsSync(public404Path)) {
   console.log('✅ Copied 404.html for GitHub Pages SPA support');
 }
 
+// Flatten nested assets directory structure
+// Expo places assets at dist/assets/src/assets/* but we need them at dist/assets/*
+const nestedAssetsPath = path.join(distDir, 'assets', 'src', 'assets');
+if (fs.existsSync(nestedAssetsPath)) {
+  const targetAssetsPath = path.join(distDir, 'assets');
+
+  // Function to recursively copy files
+  function copyRecursive(src, dest) {
+    const items = fs.readdirSync(src);
+
+    for (const item of items) {
+      const srcPath = path.join(src, item);
+      const destPath = path.join(dest, item);
+
+      if (fs.statSync(srcPath).isDirectory()) {
+        if (!fs.existsSync(destPath)) {
+          fs.mkdirSync(destPath, { recursive: true });
+        }
+        copyRecursive(srcPath, destPath);
+      } else {
+        fs.copyFileSync(srcPath, destPath);
+      }
+    }
+  }
+
+  // Copy all files from nested location to root assets
+  copyRecursive(nestedAssetsPath, targetAssetsPath);
+  console.log('✅ Flattened nested assets directory');
+}
+
 console.log('✅ Fixed paths in index.html');
 console.log('✅ Fixed paths in unity/index.html');
 console.log('✅ Created .nojekyll file');
