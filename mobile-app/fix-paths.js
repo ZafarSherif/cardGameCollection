@@ -98,6 +98,27 @@ if (fs.existsSync(nestedAssetsPath)) {
   console.log('✅ Flattened nested assets directory');
 }
 
+// Fix asset paths in JavaScript bundles
+// Replace 'assets/src/assets/' with 'assets/' in all JS files
+const jsDir = path.join(distDir, '_expo', 'static', 'js', 'web');
+if (fs.existsSync(jsDir)) {
+  const jsFiles = fs.readdirSync(jsDir).filter(file => file.endsWith('.js'));
+
+  jsFiles.forEach(file => {
+    const filePath = path.join(jsDir, file);
+    let content = fs.readFileSync(filePath, 'utf8');
+
+    // Replace nested asset paths with flattened paths
+    const originalContent = content;
+    content = content.replace(/assets\/src\/assets\//g, 'assets/');
+
+    if (content !== originalContent) {
+      fs.writeFileSync(filePath, content);
+      console.log(`✅ Fixed asset paths in ${file}`);
+    }
+  });
+}
+
 console.log('✅ Fixed paths in index.html');
 console.log('✅ Fixed paths in unity/index.html');
 console.log('✅ Created .nojekyll file');
