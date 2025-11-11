@@ -163,25 +163,75 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf1466f3d55d94d6a89e990278108b4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MemoryMatch.MemoryMatchGameManager
+  currentDifficulty: 1
   gridRows: 4
   gridCols: 4
   cardSpacing: 1.5
+  cardScale: 1
   cardPrefab: {fileID: 8315258612116631548, guid: 5619a3ee878754a3b8b0686b3548ae1c, type: 3}
   cardBackSprite: {fileID: 21300000, guid: 8b227699fb12c49d98dd53f67e67788b, type: 3}
   cardFrontSprites:
-  - {fileID: 21300000, guid: 6fbe7513da9eb491ea4289e292eb0aa8, type: 3}
   - {fileID: 21300000, guid: 35b0886f53b2249bdb45182b3fa21f7e, type: 3}
+  - {fileID: 21300000, guid: 752741f2dad164de9895ad1215b5eee7, type: 3}
   - {fileID: 21300000, guid: 2f8bc827a685d4451a83ab53e4a8676c, type: 3}
-  - {fileID: 21300000, guid: 1efeb253e65ed4fc4968cf66044a827e, type: 3}
-  - {fileID: 21300000, guid: 10882711ca2fc439cab4e055c03d740b, type: 3}
+  - {fileID: 21300000, guid: bb5fa17b65cb647e28fbed6807a393e1, type: 3}
+  - {fileID: 21300000, guid: 96461672c5d11452994c6d937eb39f10, type: 3}
+  - {fileID: 21300000, guid: 1387a482ac35643d5bd175826e19c4a2, type: 3}
   - {fileID: 21300000, guid: 692430ee7e1654ca399c9e945d9dda1a, type: 3}
+  - {fileID: 21300000, guid: 9e0dfa14d8fcb4896a8c5e6fbd28e998, type: 3}
   - {fileID: 21300000, guid: 787ffb2a4f1644b07aedf4fe5174484f, type: 3}
-  - {fileID: 21300000, guid: 288937b0abbbb42b48da7327fa0fa6b6, type: 3}
+  - {fileID: 21300000, guid: 5cf8e3b61da7e4a7c93ab93236ff3e19, type: 3}
+  - {fileID: 21300000, guid: ea8f4cb431e034af789ed09760c566e0, type: 3}
+  - {fileID: 21300000, guid: 511b39a2847464457af98b4b7c6726b4, type: 3}
   moves: 0
   matches: 0
   gameTime: 0
   score: 0
   gameWon: 0
+--- !u!1 &447887198
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 447887200}
+  - component: {fileID: 447887199}
+  m_Layer: 0
+  m_Name: ReactBridge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &447887199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 447887198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e66d6ed595aef49178e8810a74c1ab20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CardGames.Core.ReactBridge
+--- !u!4 &447887200
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 447887198}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.92357, y: 1.01189, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1608338560
 GameObject:
   m_ObjectHideFlags: 0
@@ -280,3 +330,4 @@ SceneRoots:
   m_Roots:
   - {fileID: 1608338563}
   - {fileID: 237599335}
+  - {fileID: 447887200}

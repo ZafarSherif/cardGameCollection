@@ -32,35 +32,52 @@ export const useUnityGame = () => {
 
   // Handle messages from Unity
   const handleUnityMessage = useCallback((event: any) => {
+    console.log('[Unity → React] Raw event received:', event);
+    console.log('[Unity → React] Event data:', event.nativeEvent?.data);
+
     try {
       const message: UnityMessage = JSON.parse(event.nativeEvent.data);
+      console.log('[Unity → React] Parsed message:', message);
 
       switch (message.type) {
         case 'gameReady':
+          console.log('[Unity → React] ✅ Game Ready! Setting isReady to true');
           setIsReady(true);
           break;
 
         case 'gameState':
+          console.log('[Unity → React] Game state update:', message.payload);
           setGameState(message.payload);
           break;
 
         case 'gameEnd':
+          console.log('[Unity → React] Game ended:', message.payload);
           setGameEndData(message.payload);
           break;
 
         default:
-          console.warn('[Unity] Unknown message type:', message.type);
+          console.warn('[Unity → React] Unknown message type:', message.type);
       }
     } catch (error) {
-      console.error('[Unity] Failed to parse message:', error);
+      console.error('[Unity → React] Failed to parse message:', error, 'Raw data:', event.nativeEvent?.data);
     }
   }, []);
 
   // Send action to Unity
   const sendToUnity = useCallback((action: string, data?: any) => {
-    if (!isReady) return;
+    console.log('[React → Unity] sendToUnity called:', { action, data, isReady });
 
-    const message = JSON.stringify({ action, data: data || {} });
+    if (!isReady) {
+      console.warn('[React → Unity] Unity not ready yet, ignoring message');
+      return;
+    }
+
+    const message = JSON.stringify({
+      action,
+      data: data ? JSON.stringify(data) : ""
+    });
+
+    console.log('[React → Unity] Sending message:', message);
 
     if (Platform.OS === 'web') {
       // For web platform, use iframe postMessage
@@ -68,16 +85,25 @@ export const useUnityGame = () => {
 
       if (iframe && iframe.contentWindow) {
         try {
+          // Properly escape the message for JavaScript string literal (escape backslashes AND quotes)
+          const escapedMessage = message.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
           const script = `
             if (window.unityInstance) {
-              window.unityInstance.SendMessage('ReactBridge', 'ReceiveFromReact', '${message.replace(/'/g, "\\'")}');
+              window.unityInstance.SendMessage('ReactBridge', 'ReceiveFromReact', '${escapedMessage}');
+              console.log('[iframe] Sent to Unity:', '${escapedMessage}');
+            } else {
+              console.error('[iframe] window.unityInstance not found!');
             }
           `;
           iframe.contentWindow.eval(script);
           iframe.contentWindow.focus(); // Keep Unity running
+          console.log('[React → Unity] Message sent successfully');
         } catch (error) {
           console.error('[Unity] Failed to send message:', error);
         }
+      } else {
+        console.error('[React → Unity] iframe or contentWindow not available');
       }
     } else {
       // For native platforms, use WebView injectJavaScript
@@ -105,6 +131,11 @@ export const useUnityGame = () => {
     sendToUnity('undo');
   }, [sendToUnity]);
 
+  const setDifficulty = useCallback((difficulty: string) => {
+    console.log('trying to send string : ', difficulty);
+    sendToUnity('setDifficulty', { difficulty });
+  }, [sendToUnity]);
+
   return {
     webViewRef,
     gameState,
@@ -114,5 +145,6 @@ export const useUnityGame = () => {
     newGame,
     restart,
     undo,
+    setDifficulty,
   };
 };

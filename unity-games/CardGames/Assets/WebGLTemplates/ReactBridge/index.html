@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Unity WebGL Game</title>
+  <title>{{{ PRODUCT_NAME }}}</title>
   <style>
     * {
       margin: 0;
@@ -111,15 +111,15 @@
     var progressBarFull = document.querySelector("#unity-progress-bar-full");
 
     var buildUrl = "Build";
-    var loaderUrl = buildUrl + "/Build.loader.js";
+    var loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
     var config = {
-      dataUrl: buildUrl + "/Build.data",
-      frameworkUrl: buildUrl + "/Build.framework.js",
-      codeUrl: buildUrl + "/Build.wasm",
+      dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+      frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+      codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
       streamingAssetsUrl: "StreamingAssets",
-      companyName: "CardGames",
-      productName: "CardGameCollection",
-      productVersion: "1.0",
+      companyName: "{{{ COMPANY_NAME }}}",
+      productName: "{{{ PRODUCT_NAME }}}",
+      productVersion: "{{{ PRODUCT_VERSION }}}",
       // showBanner: unityShowBanner,
     };
 

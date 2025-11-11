@@ -21,6 +21,7 @@ import { GameActions } from '../components/game/GameActions';
 import { WinModal } from '../components/game/WinModal';
 import { UnityFrame } from '../components/game/UnityFrame';
 import { HowToPlayModal } from '../components/HowToPlayModal';
+import { DifficultySelector } from '../components/game/DifficultySelector';
 
 type GameScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -41,10 +42,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
   const [gameStartTime] = useState(Date.now());
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [difficulty, setDifficultyState] = useState<'Easy' | 'Medium' | 'Hard'>('Medium');
 
   // Use Unity game hook
-  const { webViewRef, gameState, gameEndData, handleUnityMessage, newGame, restart, undo } =
+  const { webViewRef, gameState, gameEndData, handleUnityMessage, newGame, restart, undo, setDifficulty } =
     useUnityGame();
+
+  const handleDifficultyChange = (newDifficulty: 'Easy' | 'Medium' | 'Hard') => {
+    setDifficultyState(newDifficulty);
+    setDifficulty(newDifficulty);
+  };
 
   const handleBack = () => {
     // Track game quit
@@ -125,6 +132,15 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
         />
       )}
 
+      {/* Difficulty Selector - Only for Memory Match */}
+      {!isLandscape && gameType === 'memory_match' && (
+        <DifficultySelector
+          currentDifficulty={difficulty}
+          onDifficultyChange={handleDifficultyChange}
+          orientation={orientation}
+        />
+      )}
+
       <View style={[styles.gameRow, isLandscape && styles.gameRowLandscape]}>
         {/* Left panel in landscape */}
         {isLandscape && (
@@ -144,6 +160,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
               matches={gameState.matches}
               orientation={orientation}
             />
+            {gameType === 'memory_match' && (
+              <DifficultySelector
+                currentDifficulty={difficulty}
+                onDifficultyChange={handleDifficultyChange}
+                orientation={orientation}
+              />
+            )}
           </View>
         )}
 
@@ -166,6 +189,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
               onUndo={undo}
               orientation={orientation}
               showUndo={gameType === 'solitaire'}
+              showRestart={gameType !== 'memory_match'}
             />
           </View>
         )}
@@ -179,6 +203,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({ navigation, route }) => 
           onUndo={undo}
           orientation={orientation}
           showUndo={gameType === 'solitaire'}
+          showRestart={gameType !== 'memory_match'}
         />
       )}
 

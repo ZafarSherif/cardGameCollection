@@ -27,15 +27,33 @@ export const UnityFrame: React.FC<UnityFrameProps> = ({ webViewRef, onMessage, g
   if (Platform.OS === 'web') {
     // For web platform, use iframe
     React.useEffect(() => {
+      console.log('[UnityFrame] Setting up message listener for web platform');
+      console.log('[UnityFrame] Expected origin:', window.location.origin);
+
       const handleMessage = (event: MessageEvent) => {
+        console.log('[UnityFrame] Message received from iframe:', {
+          origin: event.origin,
+          expectedOrigin: window.location.origin,
+          data: event.data,
+          source: event.source
+        });
+
         // Only accept messages from our origin
         if (event.origin === window.location.origin) {
+          console.log('[UnityFrame] ✅ Origin matches, forwarding to onMessage');
           onMessage({ nativeEvent: { data: event.data } });
+        } else {
+          console.warn('[UnityFrame] ❌ Origin mismatch, ignoring message');
         }
       };
 
       window.addEventListener('message', handleMessage);
-      return () => window.removeEventListener('message', handleMessage);
+      console.log('[UnityFrame] Message listener attached');
+
+      return () => {
+        console.log('[UnityFrame] Removing message listener');
+        window.removeEventListener('message', handleMessage);
+      };
     }, [onMessage]);
 
     // Construct Unity path based on game type and current location for GitHub Pages compatibility
@@ -51,6 +69,19 @@ export const UnityFrame: React.FC<UnityFrameProps> = ({ webViewRef, onMessage, g
     };
 
     const unityPath = getUnityPath();
+
+    // Auto-focus iframe when it loads to ensure Unity starts immediately
+    React.useEffect(() => {
+      const iframe = webViewRef.current as HTMLIFrameElement;
+      if (iframe) {
+        const handleLoad = () => {
+          console.log('[UnityFrame] iframe loaded, focusing...');
+          iframe.contentWindow?.focus();
+        };
+        iframe.addEventListener('load', handleLoad);
+        return () => iframe.removeEventListener('load', handleLoad);
+      }
+    }, [webViewRef]);
 
     return (
       <iframe

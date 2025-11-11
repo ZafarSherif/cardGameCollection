@@ -12,10 +12,16 @@ namespace MemoryMatch
     /// </summary>
     public class MemoryMatchGameManager : MonoBehaviour
     {
+        public enum Difficulty { Easy, Medium, Hard }
+
+        [Header("Game Settings")]
+        public Difficulty currentDifficulty = Difficulty.Medium;
+
         [Header("Grid Settings")]
-        public int gridRows = 4;
-        public int gridCols = 4;
-        public float cardSpacing = 1.5f;
+        public int gridRows = 5;
+        public int gridCols = 4;  // Default to Medium difficulty (5x4)
+        public float cardSpacing = 1.5f;  // Spacing between cards
+        public float cardScale = 0.85f;  // Scale multiplier for card size
 
         [Header("Card Prefab")]
         public GameObject cardPrefab;
@@ -49,6 +55,7 @@ namespace MemoryMatch
             }
 
             InitializeGame();
+            StartCoroutine(UpdateTimerCoroutine());
         }
 
         void OnDestroy()
@@ -56,6 +63,22 @@ namespace MemoryMatch
             if (reactBridge != null)
             {
                 ReactBridge.OnReactMessageReceived -= OnReactMessage;
+            }
+        }
+
+        /// <summary>
+        /// Update timer in React UI every second
+        /// </summary>
+        private IEnumerator UpdateTimerCoroutine()
+        {
+            Debug.Log("[Timer] Coroutine started");
+            while (true)
+            {
+                yield return new WaitForSeconds(1f);
+                if (!gameWon)
+                {
+                    SendGameStateToReact();
+                }
             }
         }
 
@@ -73,6 +96,9 @@ namespace MemoryMatch
         void InitializeGame()
         {
             Debug.Log("[MemoryMatch] Initializing game");
+
+            // Set grid size based on difficulty
+            SetGridSizeForDifficulty();
 
             // Clear existing cards
             ClearCards();
@@ -92,11 +118,40 @@ namespace MemoryMatch
             // Send initial state to React
             SendGameStateToReact();
 
-            Debug.Log("[MemoryMatch] Game initialized");
+            Debug.Log($"[MemoryMatch] Game initialized - Difficulty: {currentDifficulty}, Grid: {gridRows}x{gridCols}");
         }
 
         /// <summary>
-        /// Create 4x4 grid of cards with 8 pairs
+        /// Set grid size and card scale based on difficulty
+        /// </summary>
+        void SetGridSizeForDifficulty()
+        {
+            switch (currentDifficulty)
+            {
+                case Difficulty.Easy:
+                    gridRows = 4;
+                    gridCols = 4;  // 16 cards, 8 pairs
+                    cardScale = 0.80f;  // Bigger cards for easy mode
+                    cardSpacing = 1.7f;
+                    break;
+                case Difficulty.Medium:
+                    gridRows = 5;
+                    gridCols = 4;  // 20 cards, 10 pairs
+                    cardScale = 0.75f;  // Medium cards
+                    cardSpacing = 1.6f;
+                    break;
+                case Difficulty.Hard:
+                    gridRows = 6;
+                    gridCols = 4;  // 24 cards, 12 pairs
+                    cardScale = 0.70f;  // Smaller cards to fit more
+                    cardSpacing = 1.5f;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Create grid of cards based on difficulty
+        /// Easy: 4x4 (8 pairs), Medium: 5x4 (10 pairs), Hard: 6x4 (12 pairs)
         /// </summary>
         void CreateCardGrid()
         {
@@ -106,10 +161,17 @@ namespace MemoryMatch
                 return;
             }
 
-            int totalCards = gridRows * gridCols; // 16 cards
-            int pairsNeeded = totalCards / 2; // 8 pairs
+            int totalCards = gridRows * gridCols;
+            int pairsNeeded = totalCards / 2;
 
-            // Create list of pair IDs (0-7, each appearing twice)
+            // Check if we have enough unique sprites
+            if (pairsNeeded > cardFrontSprites.Length)
+            {
+                Debug.LogError($"[MemoryMatch] Not enough card sprites! Need {pairsNeeded} unique sprites, but only have {cardFrontSprites.Length}. " +
+                              $"Add more sprites to cardFrontSprites array in Inspector to avoid reusing sprites with different pairIds.");
+            }
+
+            // Create list of pair IDs (0 to pairsNeeded-1, each appearing twice)
             List<int> pairIds = new List<int>();
             for (int i = 0; i < pairsNeeded; i++)
             {
@@ -142,6 +204,9 @@ namespace MemoryMatch
                     // Instantiate card
                     GameObject cardObj = Instantiate(cardPrefab, position, Quaternion.identity, transform);
                     cardObj.name = $"Card_{row}_{col}";
+
+                    // Apply card scale based on difficulty
+                    cardObj.transform.localScale = Vector3.one * cardScale;
 
                     MemoryCard card = cardObj.GetComponent<MemoryCard>();
                     if (card == null)
@@ -275,18 +340,43 @@ namespace MemoryMatch
         /// </summary>
         void OnReactMessage(string json)
         {
+            Debug.Log($"[MemoryMatch] OnReactMessage called with JSON: {json}");
+
             try
             {
                 ReactAction action = ReactAction.FromJson(json);
-                Debug.Log($"[MemoryMatch] Received action: {action.action}");
+                Debug.Log($"[MemoryMatch] Parsed action: {action.action}, data: {action.data}");
 
                 switch (action.action)
                 {
                     case "newGame":
+                        Debug.Log("[MemoryMatch] Executing newGame action");
                         InitializeGame();
                         break;
                     case "restart":
+                        Debug.Log("[MemoryMatch] Executing restart action");
                         InitializeGame();
+                        break;
+                    case "setDifficulty":
+                        // Parse difficulty from action data
+                        if (!string.IsNullOrEmpty(action.data))
+                        {
+                            try
+                            {
+                                DifficultyData diffData = JsonUtility.FromJson<DifficultyData>(action.data);
+                                if (System.Enum.TryParse(diffData.difficulty, true, out Difficulty diff))
+                                {
+                                    currentDifficulty = diff;
+                                    Debug.Log($"[MemoryMatch] Difficulty set to: {currentDifficulty}");
+                                    // Restart game with new difficulty
+                                    InitializeGame();
+                                }
+                            }
+                            catch (System.Exception e)
+                            {
+                                Debug.LogError($"[MemoryMatch] Failed to parse difficulty: {e.Message}");
+                            }
+                        }
                         break;
                     default:
                         Debug.LogWarning($"[MemoryMatch] Unknown action: {action.action}");
@@ -306,16 +396,15 @@ namespace MemoryMatch
         {
             if (reactBridge == null) return;
 
-            string json = JsonUtility.ToJson(new GameStateMessage
+            GameStatePayload payload = new GameStatePayload
             {
-                type = "gameState",
                 score = score,
                 moves = moves,
                 matches = matches,
                 time = FormatTime(gameTime)
-            });
+            };
 
-            reactBridge.SendToReact("gameState", json);
+            reactBridge.SendToReact("gameState", JsonUtility.ToJson(payload));
         }
 
         /// <summary>
@@ -325,16 +414,15 @@ namespace MemoryMatch
         {
             if (reactBridge == null) return;
 
-            string json = JsonUtility.ToJson(new GameEndMessage
+            GameEndPayload payload = new GameEndPayload
             {
-                type = "gameEnd",
                 won = true,
                 finalScore = score,
                 finalTime = FormatTime(gameTime),
                 moves = moves
-            });
+            };
 
-            reactBridge.SendToReact("gameEnd", json);
+            reactBridge.SendToReact("gameEnd", JsonUtility.ToJson(payload));
         }
 
         string FormatTime(float seconds)
@@ -344,11 +432,10 @@ namespace MemoryMatch
             return $"{minutes:00}:{secs:00}";
         }
 
-        // Message classes for React communication
+        // Payload classes for React communication
         [System.Serializable]
-        class GameStateMessage
+        class GameStatePayload
         {
-            public string type;
             public int score;
             public int moves;
             public int matches;
@@ -356,13 +443,18 @@ namespace MemoryMatch
         }
 
         [System.Serializable]
-        class GameEndMessage
+        class GameEndPayload
         {
-            public string type;
             public bool won;
             public int finalScore;
             public string finalTime;
             public int moves;
+        }
+
+        [System.Serializable]
+        class DifficultyData
+        {
+            public string difficulty;
         }
     }
 }

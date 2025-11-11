@@ -27,7 +27,8 @@
       "Bash(git push:*)",
       "Bash(node -e:*)",
       "Bash(xargs kill:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

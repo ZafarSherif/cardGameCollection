@@ -8,6 +8,7 @@ interface GameActionsProps {
   onUndo: () => void;
   orientation: 'portrait' | 'landscape';
   showUndo?: boolean;
+  showRestart?: boolean;
 }
 
 export const GameActions: React.FC<GameActionsProps> = ({
@@ -16,20 +17,23 @@ export const GameActions: React.FC<GameActionsProps> = ({
   onUndo,
   orientation,
   showUndo = true,
+  showRestart = true,
 }) => {
   const { t } = useLanguage();
   const isLandscape = orientation === 'landscape';
 
   return (
     <View style={[styles.container, isLandscape && styles.containerLandscape]}>
-      <TouchableOpacity style={styles.button} onPress={onNewGame}>
+      <TouchableOpacity style={[styles.button, isLandscape && styles.buttonLandscape]} onPress={onNewGame}>
         <Text style={styles.buttonText}>{t.common.newGame}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={onRestart}>
-        <Text style={styles.buttonText}>{t.common.restart}</Text>
-      </TouchableOpacity>
+      {showRestart && (
+        <TouchableOpacity style={[styles.button, isLandscape && styles.buttonLandscape]} onPress={onRestart}>
+          <Text style={styles.buttonText}>{t.common.restart}</Text>
+        </TouchableOpacity>
+      )}
       {showUndo && (
-        <TouchableOpacity style={styles.button} onPress={onUndo}>
+        <TouchableOpacity style={[styles.button, isLandscape && styles.buttonLandscape]} onPress={onUndo}>
           <Text style={styles.buttonText}>Undo</Text>
         </TouchableOpacity>
       )}
@@ -58,6 +62,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginVertical: 8,
     minWidth: 100,
+  },
+  buttonLandscape: {
+    width: '100%',
+    marginVertical: 6,
+    marginHorizontal: 0,
   },
   buttonText: {
     color: '#fff',
