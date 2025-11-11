@@ -28,7 +28,10 @@
       "Bash(node -e:*)",
       "Bash(xargs kill:*)",
       "Bash(pkill:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(npm run fix-paths:*)",
+      "Bash(npx expo prebuild:*)",
+      "Bash(sudo gem install:*)"
     ],
     "deny": [],
     "ask": []
