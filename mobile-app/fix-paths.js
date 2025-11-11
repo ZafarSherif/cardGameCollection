@@ -99,7 +99,7 @@ if (fs.existsSync(nestedAssetsPath)) {
 }
 
 // Fix asset paths in JavaScript bundles
-// Replace 'assets/src/assets/' with 'assets/' in all JS files
+// Replace 'assets/src/assets/' with 'assets/' and fix absolute paths
 const jsDir = path.join(distDir, '_expo', 'static', 'js', 'web');
 if (fs.existsSync(jsDir)) {
   const jsFiles = fs.readdirSync(jsDir).filter(file => file.endsWith('.js'));
@@ -107,10 +107,14 @@ if (fs.existsSync(jsDir)) {
   jsFiles.forEach(file => {
     const filePath = path.join(jsDir, file);
     let content = fs.readFileSync(filePath, 'utf8');
+    const originalContent = content;
 
     // Replace nested asset paths with flattened paths
-    const originalContent = content;
     content = content.replace(/assets\/src\/assets\//g, 'assets/');
+
+    // Fix absolute asset URIs - remove leading slash so they respect base tag
+    // Change uri:"/assets/ to uri:"assets/
+    content = content.replace(/uri:"\/assets\//g, 'uri:"assets/');
 
     if (content !== originalContent) {
       fs.writeFileSync(filePath, content);
