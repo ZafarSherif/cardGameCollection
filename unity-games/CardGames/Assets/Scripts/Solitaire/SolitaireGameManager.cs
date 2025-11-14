@@ -447,6 +447,27 @@ namespace CardGames.Solitaire
         }
 
         /// <summary>
+        /// Check if cards can be moved from one pile to another (without actually moving them)
+        /// Used for rect-based drop detection
+        /// </summary>
+        public bool CanMoveCards(List<Card> cards, Pile sourcePile, Pile targetPile)
+        {
+            if (cards == null || cards.Count == 0) return false;
+            if (sourcePile == null || targetPile == null) return false;
+
+            Card bottomCard = cards[0];
+
+            // Foundation can only accept ONE card at a time
+            if (targetPile.Type == Pile.PileType.Foundation && cards.Count > 1)
+            {
+                return false;
+            }
+
+            // Check if target pile can accept the bottom card
+            return targetPile.CanAcceptCard(bottomCard);
+        }
+
+        /// <summary>
         /// Try to move cards from one pile to another
         /// </summary>
         public bool TryMoveCards(List<Card> cards, Pile sourcePile, Pile targetPile)

@@ -170,6 +170,7 @@ namespace CardGames.Core
             }
 
             // Waste pile: only TOP card should have collider enabled
+            // The fan shows 3 cards visually, but only the top one is draggable (classic solitaire)
             if (currentPile != null && currentPile.Type == Pile.PileType.Waste)
             {
                 Card topCard = currentPile.GetTopCard();

@@ -23,6 +23,7 @@ namespace CardGames.Solitaire
         private Transform originalParent;
         private Pile originalPile;
         private List<Card> cardsBeingDragged;
+        private Vector3 dragOffset; // Offset from card position to mouse position
 
         private Camera mainCamera;
 
@@ -77,6 +78,8 @@ namespace CardGames.Solitaire
                 }
             }
 
+            // Colliders are now sized to only cover visible portions of cards,
+            // so Unity's OnMouseDown naturally triggers on the correct card
             StartDragging();
         }
 
@@ -85,12 +88,15 @@ namespace CardGames.Solitaire
             if (isDragging)
             {
                 Vector3 mousePosition = GetMouseWorldPosition();
-                mousePosition.z = dragZOffset;
+
+                // Calculate target position using the offset (maintains grab position)
+                Vector3 targetPosition = mousePosition - dragOffset;
+                targetPosition.z = dragZOffset;
 
                 // Move all cards being dragged
                 if (cardsBeingDragged != null)
                 {
-                    Vector3 offset = mousePosition - transform.position;
+                    Vector3 offset = targetPosition - transform.position;
                     foreach (Card dragCard in cardsBeingDragged)
                     {
                         dragCard.transform.position += offset;
@@ -116,6 +122,13 @@ namespace CardGames.Solitaire
             originalPosition = transform.position;
             originalParent = transform.parent;
             originalPile = card.CurrentPile;
+
+            // Calculate drag offset (difference between mouse position and card position)
+            // This maintains the grab point relative to the card
+            Vector3 mousePosition = GetMouseWorldPosition();
+            dragOffset = mousePosition - transform.position;
+            dragOffset.z = 0; // Ignore Z component
+            Debug.Log($"[StartDrag] Drag offset: {dragOffset}");
 
             // Get all cards that should move with this one
             if (originalPile != null)
@@ -195,125 +208,267 @@ namespace CardGames.Solitaire
         }
 
         /// <summary>
-        /// Return cards to their original position
+        /// Return cards to their original position with smooth animation
         /// </summary>
         private void ReturnToOriginalPosition()
         {
-            Debug.Log("Returning cards to original position");
+            Debug.Log("Returning cards to original position with animation");
 
             if (cardsBeingDragged != null && originalPile != null)
             {
-                // Cards are still logically in the original pile
-                // Just need to refresh their visual positions
-                originalPile.RefreshCardPositions();
+                // Make a local copy since cardsBeingDragged will be set to null
+                List<Card> cardsToAnimate = new List<Card>(cardsBeingDragged);
+                Pile sourcePile = originalPile;
 
-                // Reset sorting order
-                for (int i = 0; i < cardsBeingDragged.Count; i++)
+                // Start smooth return animation with local copies
+                StartCoroutine(AnimateCardsBack(cardsToAnimate, sourcePile));
+            }
+        }
+
+        /// <summary>
+        /// Animate cards smoothly back to their original positions
+        /// </summary>
+        private System.Collections.IEnumerator AnimateCardsBack(List<Card> cardsToAnimate, Pile sourcePile)
+        {
+            // Safety check
+            if (cardsToAnimate == null || cardsToAnimate.Count == 0 || sourcePile == null)
+            {
+                yield break;
+            }
+
+            // Store starting positions
+            Dictionary<Card, Vector3> startPositions = new Dictionary<Card, Vector3>();
+            foreach (Card dragCard in cardsToAnimate)
+            {
+                if (dragCard != null)
                 {
-                    Card dragCard = cardsBeingDragged[i];
-                    int indexInPile = originalPile.Cards.IndexOf(dragCard);
-                    if (indexInPile >= 0)
+                    startPositions[dragCard] = dragCard.transform.position;
+                }
+            }
+
+            // Get target positions (refresh positions in pile)
+            sourcePile.RefreshCardPositions();
+            Dictionary<Card, Vector3> targetPositions = new Dictionary<Card, Vector3>();
+            foreach (Card dragCard in cardsToAnimate)
+            {
+                if (dragCard != null)
+                {
+                    targetPositions[dragCard] = dragCard.transform.localPosition;
+                }
+            }
+
+            // Animate over 0.3 seconds
+            float duration = 0.3f;
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+                // Ease out cubic for nice feel
+                t = 1f - Mathf.Pow(1f - t, 3f);
+
+                foreach (Card dragCard in cardsToAnimate)
+                {
+                    if (dragCard != null && startPositions.ContainsKey(dragCard) && targetPositions.ContainsKey(dragCard))
                     {
-                        SetCardSortingOrder(dragCard, indexInPile);
+                        Vector3 startPos = startPositions[dragCard];
+                        Vector3 targetPos = targetPositions[dragCard];
+                        // Convert target from local to world space
+                        Vector3 worldTarget = sourcePile.transform.TransformPoint(targetPos);
+                        dragCard.transform.position = Vector3.Lerp(startPos, worldTarget, t);
+                    }
+                }
+
+                yield return null;
+            }
+
+            // Snap to final positions
+            if (sourcePile != null)
+            {
+                sourcePile.RefreshCardPositions();
+            }
+
+            // Reset sorting order
+            if (cardsToAnimate != null && sourcePile != null)
+            {
+                for (int i = 0; i < cardsToAnimate.Count; i++)
+                {
+                    Card dragCard = cardsToAnimate[i];
+                    if (dragCard != null)
+                    {
+                        int indexInPile = sourcePile.Cards.IndexOf(dragCard);
+                        if (indexInPile >= 0)
+                        {
+                            SetCardSortingOrder(dragCard, indexInPile);
+                        }
                     }
                 }
             }
         }
 
         /// <summary>
-        /// Get the pile under the mouse cursor
+        /// Get the best target pile for dropping cards using rect-based overlap detection
         /// </summary>
         private Pile GetPileUnderMouse()
         {
-            Vector3 mousePos = GetMouseWorldPosition();
+            // Get the 2D rect of the card being dragged
+            Rect cardRect = GetCardRect();
 
-            // Method 1: Check if dropping on a card (cards are easier to hit than piles)
-            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
-            if (hit.collider != null)
+            // Find all piles that overlap with the card
+            List<Pile> overlappingPiles = new List<Pile>();
+            Pile[] allPiles = FindObjectsOfType<Pile>();
+
+            foreach (Pile pile in allPiles)
             {
-                // First check if we hit a card
-                Card hitCard = hit.collider.GetComponent<Card>();
-                if (hitCard != null && hitCard.CurrentPile != null)
+                // Skip the original pile
+                if (pile == originalPile)
+                    continue;
+
+                // Get pile rect
+                Rect pileRect = GetPileRect(pile);
+
+                // Check if card rect overlaps with pile rect (2D overlap, ignoring Z)
+                if (cardRect.Overlaps(pileRect))
                 {
-                    // IMPORTANT: Don't count cards we're currently dragging!
-                    if (cardsBeingDragged != null && cardsBeingDragged.Contains(hitCard))
+                    // Check if this would be a valid move
+                    if (gameManager != null && gameManager.CanMoveCards(cardsBeingDragged, originalPile, pile))
                     {
-                        Debug.Log($"Hit card we're dragging ({hitCard.GetCardName()}), ignoring...");
+                        overlappingPiles.Add(pile);
+                        Debug.Log($"Card overlaps with {pile.Type} - valid move!");
                     }
                     else
                     {
-                        Debug.Log($"Found card: {hitCard.GetCardName()} → using its pile: {hitCard.CurrentPile.Type}");
-                        return hitCard.CurrentPile;
-                    }
-                }
-                else
-                {
-                    // Check if we hit a pile directly
-                    Pile pile = hit.collider.GetComponent<Pile>();
-                    if (pile != null)
-                    {
-                        Debug.Log($"Found pile via raycast: {pile.Type}");
-                        return pile;
+                        Debug.Log($"Card overlaps with {pile.Type} - but not a valid move");
                     }
                 }
             }
 
-            // Method 2: Try OverlapPoint (check all colliders at position)
+            // If we found overlapping valid piles, pick the closest one
+            if (overlappingPiles.Count > 0)
+            {
+                Pile bestPile = GetClosestPile(overlappingPiles, new Vector3(cardRect.center.x, cardRect.center.y, 0));
+                Debug.Log($"✓ Best target pile: {bestPile.Type} (from {overlappingPiles.Count} valid options)");
+                return bestPile;
+            }
+
+            // Fallback: Check if mouse is over a pile (for edge cases)
+            Vector3 mousePos = GetMouseWorldPosition();
             Collider2D[] colliders = Physics2D.OverlapPointAll(mousePos);
 
-            // First pass: look for cards (but not the ones we're dragging)
-            foreach (Collider2D collider in colliders)
-            {
-                Card hitCard = collider.GetComponent<Card>();
-                if (hitCard != null && hitCard.CurrentPile != null)
-                {
-                    // Skip cards we're currently dragging
-                    if (cardsBeingDragged != null && cardsBeingDragged.Contains(hitCard))
-                    {
-                        continue;
-                    }
-
-                    Debug.Log($"Found card via overlap: {hitCard.GetCardName()} → using its pile: {hitCard.CurrentPile.Type}");
-                    return hitCard.CurrentPile;
-                }
-            }
-
-            // Second pass: look for piles
             foreach (Collider2D collider in colliders)
             {
                 Pile pile = collider.GetComponent<Pile>();
-                if (pile != null)
+                if (pile != null && pile != originalPile)
                 {
-                    Debug.Log($"Found pile via overlap: {pile.Type}");
+                    Debug.Log($"Fallback: Found pile at mouse position: {pile.Type}");
                     return pile;
                 }
             }
 
-            // Method 3: Find closest pile (fallback)
-            Pile closestPile = null;
-            float closestDistance = pileDetectionRadius;
+            Debug.Log("✗ No valid target pile found");
+            return null;
+        }
 
-            Pile[] allPiles = FindObjectsOfType<Pile>();
-            foreach (Pile pile in allPiles)
+        /// <summary>
+        /// Get the 2D rect of the card being dragged (X and Y only, ignoring Z)
+        /// </summary>
+        private Rect GetCardRect()
+        {
+            // Use the card's sprite renderer to get accurate bounds
+            SpriteRenderer renderer = card.GetComponent<SpriteRenderer>();
+            if (renderer == null)
             {
-                float distance = Vector3.Distance(mousePos, pile.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestPile = pile;
-                }
+                renderer = card.GetComponentInChildren<SpriteRenderer>();
             }
 
-            if (closestPile != null)
+            if (renderer != null)
             {
-                Debug.Log($"Found pile via proximity: {closestPile.Type}");
+                Bounds bounds = renderer.bounds;
+                return new Rect(bounds.min.x, bounds.min.y, bounds.size.x, bounds.size.y);
+            }
+
+            // Fallback: use collider bounds
+            Collider2D collider = card.GetComponent<Collider2D>();
+            if (collider != null)
+            {
+                Bounds bounds = collider.bounds;
+                return new Rect(bounds.min.x, bounds.min.y, bounds.size.x, bounds.size.y);
+            }
+
+            // Last resort: create rect from position with standard card size
+            Vector3 pos = card.transform.position;
+            return new Rect(pos.x - 0.315f, pos.y - 0.44f, 0.63f, 0.88f);
+        }
+
+        /// <summary>
+        /// Get the 2D rect of a pile (including all cards in it, X and Y only, ignoring Z)
+        /// </summary>
+        private Rect GetPileRect(Pile pile)
+        {
+            // Start with the pile's own collider bounds
+            Collider2D pileCollider = pile.GetComponent<Collider2D>();
+
+            Rect rect;
+            if (pileCollider != null)
+            {
+                Bounds bounds = pileCollider.bounds;
+                rect = new Rect(bounds.min.x, bounds.min.y, bounds.size.x, bounds.size.y);
             }
             else
             {
-                Debug.Log("No pile found at drop position");
+                // Fallback: use pile position with standard size
+                Vector3 pos = pile.transform.position;
+                rect = new Rect(pos.x - 0.315f, pos.y - 0.44f, 0.63f, 0.88f);
             }
 
-            return closestPile;
+            // Expand to include all cards in the pile
+            foreach (Card pileCard in pile.Cards)
+            {
+                SpriteRenderer renderer = pileCard.GetComponent<SpriteRenderer>();
+                if (renderer != null && renderer.enabled)
+                {
+                    Bounds cardBounds = renderer.bounds;
+                    Rect cardRect = new Rect(cardBounds.min.x, cardBounds.min.y, cardBounds.size.x, cardBounds.size.y);
+
+                    // Expand rect to include this card
+                    float minX = Mathf.Min(rect.xMin, cardRect.xMin);
+                    float minY = Mathf.Min(rect.yMin, cardRect.yMin);
+                    float maxX = Mathf.Max(rect.xMax, cardRect.xMax);
+                    float maxY = Mathf.Max(rect.yMax, cardRect.yMax);
+                    rect = new Rect(minX, minY, maxX - minX, maxY - minY);
+                }
+            }
+
+            return rect;
+        }
+
+        /// <summary>
+        /// Find the closest pile from a list of piles
+        /// </summary>
+        private Pile GetClosestPile(List<Pile> piles, Vector3 cardPosition)
+        {
+            if (piles.Count == 0)
+                return null;
+
+            if (piles.Count == 1)
+                return piles[0];
+
+            // Find pile with center closest to card center
+            Pile closest = piles[0];
+            float closestDistance = Vector3.Distance(cardPosition, piles[0].transform.position);
+
+            for (int i = 1; i < piles.Count; i++)
+            {
+                float distance = Vector3.Distance(cardPosition, piles[i].transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closest = piles[i];
+                }
+            }
+
+            return closest;
         }
 
         /// <summary>

@@ -203,6 +203,9 @@ namespace CardGames.Core
 
                 // Update collider state (only top cards in waste/foundation should be clickable)
                 card.UpdateCollider();
+
+                // Update collider size for tableau piles to prevent overlap issues
+                UpdateCardColliderSize(card, i);
             }
 
             // Update pile's own collider (only enabled when empty)
@@ -241,10 +244,36 @@ namespace CardGames.Core
             switch (type)
             {
                 case PileType.Stock:
-                case PileType.Waste:
                 case PileType.Foundation:
                     // Cards stack on top of each other (no fanning)
                     position.y = index * 0.01f; // Slight offset for depth
+                    break;
+
+                case PileType.Waste:
+                    // Fan out the top 3 cards horizontally (classic solitaire style)
+                    int totalCards = cards.Count;
+                    if (totalCards <= 3)
+                    {
+                        // If 3 or fewer cards, fan them all
+                        position.x = index * 0.25f; // Horizontal spacing
+                        position.y = index * 0.01f; // Slight depth offset
+                    }
+                    else
+                    {
+                        // More than 3 cards: stack older cards, fan the top 3
+                        int cardsFromEnd = totalCards - 1 - index; // 0 = top card, 1 = second from top, etc.
+                        if (cardsFromEnd < 3)
+                        {
+                            // Top 3 cards: fan horizontally
+                            position.x = (2 - cardsFromEnd) * 0.25f; // 0, 0.25, 0.5
+                            position.y = index * 0.01f;
+                        }
+                        else
+                        {
+                            // Older cards: just stack with depth offset
+                            position.y = index * 0.01f;
+                        }
+                    }
                     break;
 
                 case PileType.Tableau:
@@ -301,6 +330,38 @@ namespace CardGames.Core
         public void RefreshCardPositions()
         {
             UpdateCardPositions();
+        }
+
+        /// <summary>
+        /// Update card collider size to prevent overlapping collider issues in tableau
+        /// </summary>
+        private void UpdateCardColliderSize(Card card, int index)
+        {
+            if (type != PileType.Tableau || !fanCards)
+                return;
+
+            BoxCollider2D boxCollider = card.GetComponent<BoxCollider2D>();
+            if (boxCollider == null)
+                return;
+
+            bool isTopCard = (index == cards.Count - 1);
+
+            if (isTopCard)
+            {
+                // Top card: full collider (reset to default)
+                boxCollider.size = new Vector2(1.45f, 1.95f); // Standard collider size
+                boxCollider.offset = Vector2.zero;
+            }
+            else
+            {
+                // Middle cards: only the visible bottom strip should be clickable
+                // Use slightly more than the card spacing to ensure no gaps
+                float visibleHeight = cardSpacing + 0.05f;
+
+                // Position collider at the bottom of the card
+                boxCollider.size = new Vector2(1.45f, visibleHeight);
+                boxCollider.offset = new Vector2(0, 1.95f/2 - visibleHeight/2);
+            }
         }
 
         /// <summary>
