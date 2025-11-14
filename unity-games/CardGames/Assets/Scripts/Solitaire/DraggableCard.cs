@@ -40,22 +40,13 @@ namespace CardGames.Solitaire
 
         private void OnMouseDown()
         {
-            Debug.Log($"[Card] OnMouseDown: {card.GetCardName()} | FaceUp: {card.IsFaceUp} | Pile: {card.CurrentPile?.Type} | Pile Index: {card.IndexInPile}");
-
-            // Stock pile cards should forward clicks to the stock pile itself (even if face down)
+            // Stock pile cards should forward clicks to the stock pile itself
             if (card.CurrentPile != null && card.CurrentPile.Type == Pile.PileType.Stock)
             {
-                Debug.Log("[Card] On stock pile - forwarding click to ClickableStockPile");
-
-                // Find and trigger the ClickableStockPile component
                 ClickableStockPile stockPileClicker = card.CurrentPile.GetComponent<ClickableStockPile>();
                 if (stockPileClicker != null)
                 {
                     stockPileClicker.HandleClick();
-                }
-                else
-                {
-                    Debug.LogError("ClickableStockPile component not found on stock pile!");
                 }
                 return;
             }
@@ -63,7 +54,6 @@ namespace CardGames.Solitaire
             // Only allow dragging if card is face up
             if (!card.IsFaceUp)
             {
-                Debug.Log($"✗ Card is face down - cannot drag {card.GetCardName()}");
                 return;
             }
 
@@ -73,13 +63,10 @@ namespace CardGames.Solitaire
                 Card topCard = card.CurrentPile.GetTopCard();
                 if (card != topCard)
                 {
-                    Debug.Log("✗ Can only drag top card from waste pile");
                     return;
                 }
             }
 
-            // Colliders are now sized to only cover visible portions of cards,
-            // so Unity's OnMouseDown naturally triggers on the correct card
             StartDragging();
         }
 
@@ -123,33 +110,23 @@ namespace CardGames.Solitaire
             originalParent = transform.parent;
             originalPile = card.CurrentPile;
 
-            // Calculate drag offset (difference between mouse position and card position)
-            // This maintains the grab point relative to the card
+            // Calculate drag offset to maintain grab point
             Vector3 mousePosition = GetMouseWorldPosition();
             dragOffset = mousePosition - transform.position;
-            dragOffset.z = 0; // Ignore Z component
-            Debug.Log($"[StartDrag] Drag offset: {dragOffset}");
+            dragOffset.z = 0;
 
             // Get all cards that should move with this one
             if (originalPile != null)
             {
                 cardsBeingDragged = originalPile.GetMovableCards(card);
-                Debug.Log($"[StartDrag] Got {cardsBeingDragged.Count} movable cards from {originalPile.Type}");
-
-                // Log each card for debugging
-                foreach (Card dragCard in cardsBeingDragged)
-                {
-                    Debug.Log($"  - {dragCard.GetCardName()} (FaceUp: {dragCard.IsFaceUp})");
-                }
             }
             else
             {
                 cardsBeingDragged = new List<Card> { card };
-                Debug.Log($"[StartDrag] No pile, dragging single card: {card.GetCardName()}");
             }
 
             // Increase sorting order for cards being dragged
-            int baseSortingOrder = 100; // High value to render on top
+            int baseSortingOrder = 100;
             for (int i = 0; i < cardsBeingDragged.Count; i++)
             {
                 SetCardSortingOrder(cardsBeingDragged[i], baseSortingOrder + i);
@@ -163,44 +140,16 @@ namespace CardGames.Solitaire
         {
             isDragging = false;
 
-            Debug.Log("Stop dragging - checking for target pile");
-
-            // Find pile under mouse
             Pile targetPile = GetPileUnderMouse();
-
             bool validMove = false;
 
             if (targetPile != null && gameManager != null)
             {
-                Debug.Log($"Attempting to move {cardsBeingDragged.Count} card(s) from {originalPile.Type} to {targetPile.Type}");
-
-                // Try to move cards to the target pile
                 validMove = gameManager.TryMoveCards(cardsBeingDragged, originalPile, targetPile);
-
-                if (validMove)
-                {
-                    Debug.Log("✓ Move successful!");
-                }
-                else
-                {
-                    Debug.Log("✗ Move rejected by game manager");
-                }
-            }
-            else
-            {
-                if (targetPile == null)
-                {
-                    Debug.Log("✗ No target pile found");
-                }
-                if (gameManager == null)
-                {
-                    Debug.LogError("✗ GameManager is null!");
-                }
             }
 
             if (!validMove)
             {
-                // Return cards to original position
                 ReturnToOriginalPosition();
             }
 
@@ -212,15 +161,12 @@ namespace CardGames.Solitaire
         /// </summary>
         private void ReturnToOriginalPosition()
         {
-            Debug.Log("Returning cards to original position with animation");
-
             if (cardsBeingDragged != null && originalPile != null)
             {
-                // Make a local copy since cardsBeingDragged will be set to null
+                // Make local copies since cardsBeingDragged will be set to null
                 List<Card> cardsToAnimate = new List<Card>(cardsBeingDragged);
                 Pile sourcePile = originalPile;
 
-                // Start smooth return animation with local copies
                 StartCoroutine(AnimateCardsBack(cardsToAnimate, sourcePile));
             }
         }
@@ -246,7 +192,7 @@ namespace CardGames.Solitaire
                 }
             }
 
-            // Get target positions (refresh positions in pile)
+            // Get target positions (refresh positions in pile FIRST, before setting high sorting order)
             sourcePile.RefreshCardPositions();
             Dictionary<Card, Vector3> targetPositions = new Dictionary<Card, Vector3>();
             foreach (Card dragCard in cardsToAnimate)
@@ -254,6 +200,17 @@ namespace CardGames.Solitaire
                 if (dragCard != null)
                 {
                     targetPositions[dragCard] = dragCard.transform.localPosition;
+                }
+            }
+
+            // NOW set high sorting order for animation (after RefreshCardPositions)
+            int baseSortingOrder = 200; // High value to render on top during animation
+            for (int i = 0; i < cardsToAnimate.Count; i++)
+            {
+                Card dragCard = cardsToAnimate[i];
+                if (dragCard != null)
+                {
+                    SetCardSortingOrder(dragCard, baseSortingOrder + i);
                 }
             }
 
@@ -312,47 +269,65 @@ namespace CardGames.Solitaire
         /// </summary>
         private Pile GetPileUnderMouse()
         {
-            // Get the 2D rect of the card being dragged
             Rect cardRect = GetCardRect();
-
-            // Find all piles that overlap with the card
             List<Pile> overlappingPiles = new List<Pile>();
             Pile[] allPiles = FindObjectsOfType<Pile>();
 
             foreach (Pile pile in allPiles)
             {
-                // Skip the original pile
-                if (pile == originalPile)
-                    continue;
+                if (pile == originalPile) continue;
 
-                // Get pile rect
+                bool overlaps = false;
+
+                // Check overlap with pile rect
                 Rect pileRect = GetPileRect(pile);
-
-                // Check if card rect overlaps with pile rect (2D overlap, ignoring Z)
                 if (cardRect.Overlaps(pileRect))
                 {
-                    // Check if this would be a valid move
-                    if (gameManager != null && gameManager.CanMoveCards(cardsBeingDragged, originalPile, pile))
+                    overlaps = true;
+                }
+
+                // Check overlap with individual cards in the pile
+                if (!overlaps)
+                {
+                    foreach (Card pileCard in pile.Cards)
                     {
-                        overlappingPiles.Add(pile);
-                        Debug.Log($"Card overlaps with {pile.Type} - valid move!");
+                        if (cardsBeingDragged != null && cardsBeingDragged.Contains(pileCard))
+                            continue;
+
+                        SpriteRenderer[] renderers = pileCard.GetComponentsInChildren<SpriteRenderer>();
+                        foreach (SpriteRenderer renderer in renderers)
+                        {
+                            if (renderer != null && renderer.enabled)
+                            {
+                                Bounds cardBounds = renderer.bounds;
+                                Rect pileCardRect = new Rect(cardBounds.min.x, cardBounds.min.y, cardBounds.size.x, cardBounds.size.y);
+
+                                if (cardRect.Overlaps(pileCardRect))
+                                {
+                                    overlaps = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (overlaps) break;
                     }
-                    else
-                    {
-                        Debug.Log($"Card overlaps with {pile.Type} - but not a valid move");
-                    }
+                }
+
+                // Check if this is a valid move
+                if (overlaps && gameManager != null && gameManager.CanMoveCards(cardsBeingDragged, originalPile, pile))
+                {
+                    overlappingPiles.Add(pile);
                 }
             }
 
-            // If we found overlapping valid piles, pick the closest one
+            // Pick the closest overlapping pile
             if (overlappingPiles.Count > 0)
             {
-                Pile bestPile = GetClosestPile(overlappingPiles, new Vector3(cardRect.center.x, cardRect.center.y, 0));
-                Debug.Log($"✓ Best target pile: {bestPile.Type} (from {overlappingPiles.Count} valid options)");
-                return bestPile;
+                return GetClosestPile(overlappingPiles, new Vector3(cardRect.center.x, cardRect.center.y, 0));
             }
 
-            // Fallback: Check if mouse is over a pile (for edge cases)
+            // Fallback: Check mouse position
             Vector3 mousePos = GetMouseWorldPosition();
             Collider2D[] colliders = Physics2D.OverlapPointAll(mousePos);
 
@@ -361,12 +336,10 @@ namespace CardGames.Solitaire
                 Pile pile = collider.GetComponent<Pile>();
                 if (pile != null && pile != originalPile)
                 {
-                    Debug.Log($"Fallback: Found pile at mouse position: {pile.Type}");
                     return pile;
                 }
             }
 
-            Debug.Log("✗ No valid target pile found");
             return null;
         }
 
